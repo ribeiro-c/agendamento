@@ -11,3 +11,40 @@ playwright install
 
 Se o container ficar reiniciando, rode:
 docker-compose logs evolution-api
+
+# Verificar se a sintaxe está correta
+docker-compose config
+
+# Iniciar os serviços
+docker-compose up -d
+
+# Verificar se o container está rodando
+docker ps
+
+# Ver os logs
+docker-compose logs -f evolution-api
+
+
+# Parar e remover todos os containers
+docker-compose down -v
+
+# Remover containers órfãos
+docker container prune -f
+
+# Remover imagens não usadas
+docker image prune -a -f
+
+# Tentar novamente
+docker-compose up -d
+
+https://docs.google.com/presentation/d/1bLlmdfGteVQDntqBffNq90Mat6j5bt3Z9tav_wc6nZU/edit?usp=sharing
+
+
+
+page.goto("https://mb4.bernoulli.com.br/login")
+
+        page.get_by_role("textbox", name="Login").fill("cecilia.amaro@soulasalle.com.br")
+        page.get_by_role("textbox", name="Senha").fill("#30Ceci3004")
+        
+        
+        [campeao.prato_0w@icloud.com](mailto:
