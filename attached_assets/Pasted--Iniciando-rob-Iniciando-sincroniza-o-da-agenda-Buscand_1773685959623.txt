@@ -1,0 +1,197 @@
+
+🚀 Iniciando robô
+🚀 Iniciando sincronização da agenda
+🔎 Buscando conexões: 1 encontradas
+🏫 Processando turma: sadfaf
+🤖 Iniciando robô
+Using selector: EpollSelector
+⚠️ Cookies inválidos. Ignorando.
+🔐 Fazendo login com usuário e senha
+💾 Cookies salvos
+📅 Lendo agenda
+📌 Evento capturado: Aula de Língua Portuguesa
+📌 Evento capturado: Aula de Língua Portuguesa - 8º ano - Dia 4/3/2026
+📌 Evento capturado: Aula de Língua Portuguesa - 8º ano - Dia 4/3/2026
+📌 Evento capturado: Dever de sala e de casa
+📌 Evento capturado: Slides trabalhados em sala
+📌 Evento capturado: Perguntas - Revisão
+📌 Evento capturado: Lista de revisão
+📌 Evento capturado: Gabarito Lista de Revisão AV1
+📌 Evento capturado: Aula de Língua Portuguesa - 8º ano - Dia 4/3/2026
+📌 Evento capturado: Aula de Língua Portuguesa - 8º ano - Dia 4/3/2026
+📌 Evento capturado: Dever de sala e de casa
+📌 Evento capturado: Slides trabalhados em sala
+📌 Evento capturado: Perguntas - Revisão
+📌 Evento capturado: Lista de revisão
+📌 Evento capturado: Gabarito Lista de Revisão AV1
+📌 Evento capturado: Aula de Língua Portuguesa - 8º ano - Dia 4/3/2026
+📌 Evento capturado: Aula de Língua Portuguesa - 8º ano - Dia 4/3/2026
+📌 Evento capturado: Dever de sala e de casa
+📌 Evento capturado: Slides trabalhados em sala
+📌 Evento capturado: Perguntas - Revisão
+📌 Evento capturado: Lista de revisão
+📌 Evento capturado: Gabarito Lista de Revisão AV1
+📌 Evento capturado: Aula de Língua Portuguesa - 8º ano - Dia 4/3/2026
+📌 Evento capturado: Aula de Língua Portuguesa - 8º ano - Dia 4/3/2026
+📌 Evento capturado: Dever de sala e de casa
+📌 Evento capturado: Slides trabalhados em sala
+📌 Evento capturado: Perguntas - Revisão
+📌 Evento capturado: Lista de revisão
+📌 Evento capturado: Gabarito Lista de Revisão AV1
+📊 Total eventos coletados: 29
+📅 Eventos encontrados: 29
+💾 Evento salvo: Aula de Língua Portuguesa
+💾 Evento salvo: Aula de Língua Portuguesa - 8º ano - Dia 4/3/2026
+💾 Evento salvo: Aula de Língua Portuguesa - 8º ano - Dia 4/3/2026
+💾 Evento salvo: Dever de sala e de casa
+💾 Evento salvo: Slides trabalhados em sala
+💾 Evento salvo: Perguntas - Revisão
+💾 Evento salvo: Lista de revisão
+💾 Evento salvo: Gabarito Lista de Revisão AV1
+💾 Evento salvo: Aula de Língua Portuguesa - 8º ano - Dia 4/3/2026
+💾 Evento salvo: Aula de Língua Portuguesa - 8º ano - Dia 4/3/2026
+💾 Evento salvo: Dever de sala e de casa
+💾 Evento salvo: Slides trabalhados em sala
+💾 Evento salvo: Perguntas - Revisão
+💾 Evento salvo: Lista de revisão
+💾 Evento salvo: Gabarito Lista de Revisão AV1
+💾 Evento salvo: Aula de Língua Portuguesa - 8º ano - Dia 4/3/2026
+💾 Evento salvo: Aula de Língua Portuguesa - 8º ano - Dia 4/3/2026
+💾 Evento salvo: Dever de sala e de casa
+💾 Evento salvo: Slides trabalhados em sala
+💾 Evento salvo: Perguntas - Revisão
+💾 Evento salvo: Lista de revisão
+💾 Evento salvo: Gabarito Lista de Revisão AV1
+💾 Evento salvo: Aula de Língua Portuguesa - 8º ano - Dia 4/3/2026
+💾 Evento salvo: Aula de Língua Portuguesa - 8º ano - Dia 4/3/2026
+💾 Evento salvo: Dever de sala e de casa
+💾 Evento salvo: Slides trabalhados em sala
+💾 Evento salvo: Perguntas - Revisão
+💾 Evento salvo: Lista de revisão
+💾 Evento salvo: Gabarito Lista de Revisão AV1
+💾 Eventos salvos: 29 | Ignorados (já existentes): 0
+📤 Enviando mensagens WhatsApp
+📲 Iniciando envio WhatsApp
+📋 Eventos pendentes de envio: 29
+📤 Enviando 'Aula de Língua Portuguesa' para turma sadfaf (1 aluno(s))
+Starting new HTTP connection (1): 127.0.0.1:8080
+http://127.0.0.1:8080 "POST /message/sendText/agenda HTTP/1.1" 400 124
+⚠ Resposta inesperada para 23423: 400
+📤 Enviando 'Aula de Língua Portuguesa - 8º ano - Dia 4/3/2026' para turma sadfaf (1 aluno(s))
+Starting new HTTP connection (1): 127.0.0.1:8080
+http://127.0.0.1:8080 "POST /message/sendText/agenda HTTP/1.1" 500 89
+⚠ Resposta inesperada para 23423: 500
+📤 Enviando 'Aula de Língua Portuguesa - 8º ano - Dia 4/3/2026' para turma sadfaf (1 aluno(s))
+Starting new HTTP connection (1): 127.0.0.1:8080
+http://127.0.0.1:8080 "POST /message/sendText/agenda HTTP/1.1" 500 89
+⚠ Resposta inesperada para 23423: 500
+📤 Enviando 'Dever de sala e de casa' para turma sadfaf (1 aluno(s))
+Starting new HTTP connection (1): 127.0.0.1:8080
+http://127.0.0.1:8080 "POST /message/sendText/agenda HTTP/1.1" 500 93
+⚠ Resposta inesperada para 23423: 500
+📤 Enviando 'Slides trabalhados em sala' para turma sadfaf (1 aluno(s))
+Starting new HTTP connection (1): 127.0.0.1:8080
+http://127.0.0.1:8080 "POST /message/sendText/agenda HTTP/1.1" 500 89
+⚠ Resposta inesperada para 23423: 500
+📤 Enviando 'Perguntas - Revisão' para turma sadfaf (1 aluno(s))
+Starting new HTTP connection (1): 127.0.0.1:8080
+http://127.0.0.1:8080 "POST /message/sendText/agenda HTTP/1.1" 500 89
+⚠ Resposta inesperada para 23423: 500
+📤 Enviando 'Lista de revisão' para turma sadfaf (1 aluno(s))
+Starting new HTTP connection (1): 127.0.0.1:8080
+http://127.0.0.1:8080 "POST /message/sendText/agenda HTTP/1.1" 500 89
+⚠ Resposta inesperada para 23423: 500
+📤 Enviando 'Gabarito Lista de Revisão AV1' para turma sadfaf (1 aluno(s))
+Starting new HTTP connection (1): 127.0.0.1:8080
+http://127.0.0.1:8080 "POST /message/sendText/agenda HTTP/1.1" 500 89
+⚠ Resposta inesperada para 23423: 500
+📤 Enviando 'Aula de Língua Portuguesa - 8º ano - Dia 4/3/2026' para turma sadfaf (1 aluno(s))
+Starting new HTTP connection (1): 127.0.0.1:8080
+http://127.0.0.1:8080 "POST /message/sendText/agenda HTTP/1.1" 500 89
+⚠ Resposta inesperada para 23423: 500
+📤 Enviando 'Aula de Língua Portuguesa - 8º ano - Dia 4/3/2026' para turma sadfaf (1 aluno(s))
+Starting new HTTP connection (1): 127.0.0.1:8080
+http://127.0.0.1:8080 "POST /message/sendText/agenda HTTP/1.1" 500 89
+⚠ Resposta inesperada para 23423: 500
+📤 Enviando 'Dever de sala e de casa' para turma sadfaf (1 aluno(s))
+Starting new HTTP connection (1): 127.0.0.1:8080
+http://127.0.0.1:8080 "POST /message/sendText/agenda HTTP/1.1" 500 89
+⚠ Resposta inesperada para 23423: 500
+📤 Enviando 'Slides trabalhados em sala' para turma sadfaf (1 aluno(s))
+Starting new HTTP connection (1): 127.0.0.1:8080
+http://127.0.0.1:8080 "POST /message/sendText/agenda HTTP/1.1" 500 89
+⚠ Resposta inesperada para 23423: 500
+📤 Enviando 'Perguntas - Revisão' para turma sadfaf (1 aluno(s))
+Starting new HTTP connection (1): 127.0.0.1:8080
+http://127.0.0.1:8080 "POST /message/sendText/agenda HTTP/1.1" 500 89
+⚠ Resposta inesperada para 23423: 500
+📤 Enviando 'Lista de revisão' para turma sadfaf (1 aluno(s))
+Starting new HTTP connection (1): 127.0.0.1:8080
+http://127.0.0.1:8080 "POST /message/sendText/agenda HTTP/1.1" 500 89
+⚠ Resposta inesperada para 23423: 500
+📤 Enviando 'Gabarito Lista de Revisão AV1' para turma sadfaf (1 aluno(s))
+Starting new HTTP connection (1): 127.0.0.1:8080
+http://127.0.0.1:8080 "POST /message/sendText/agenda HTTP/1.1" 500 89
+⚠ Resposta inesperada para 23423: 500
+📤 Enviando 'Aula de Língua Portuguesa - 8º ano - Dia 4/3/2026' para turma sadfaf (1 aluno(s))
+Starting new HTTP connection (1): 127.0.0.1:8080
+http://127.0.0.1:8080 "POST /message/sendText/agenda HTTP/1.1" 500 89
+⚠ Resposta inesperada para 23423: 500
+📤 Enviando 'Aula de Língua Portuguesa - 8º ano - Dia 4/3/2026' para turma sadfaf (1 aluno(s))
+Starting new HTTP connection (1): 127.0.0.1:8080
+http://127.0.0.1:8080 "POST /message/sendText/agenda HTTP/1.1" 500 89
+⚠ Resposta inesperada para 23423: 500
+📤 Enviando 'Dever de sala e de casa' para turma sadfaf (1 aluno(s))
+Starting new HTTP connection (1): 127.0.0.1:8080
+http://127.0.0.1:8080 "POST /message/sendText/agenda HTTP/1.1" 500 89
+⚠ Resposta inesperada para 23423: 500
+📤 Enviando 'Slides trabalhados em sala' para turma sadfaf (1 aluno(s))
+Starting new HTTP connection (1): 127.0.0.1:8080
+http://127.0.0.1:8080 "POST /message/sendText/agenda HTTP/1.1" 500 93
+⚠ Resposta inesperada para 23423: 500
+📤 Enviando 'Perguntas - Revisão' para turma sadfaf (1 aluno(s))
+Starting new HTTP connection (1): 127.0.0.1:8080
+http://127.0.0.1:8080 "POST /message/sendText/agenda HTTP/1.1" 500 89
+⚠ Resposta inesperada para 23423: 500
+📤 Enviando 'Lista de revisão' para turma sadfaf (1 aluno(s))
+Starting new HTTP connection (1): 127.0.0.1:8080
+http://127.0.0.1:8080 "POST /message/sendText/agenda HTTP/1.1" 500 89
+⚠ Resposta inesperada para 23423: 500
+📤 Enviando 'Gabarito Lista de Revisão AV1' para turma sadfaf (1 aluno(s))
+Starting new HTTP connection (1): 127.0.0.1:8080
+http://127.0.0.1:8080 "POST /message/sendText/agenda HTTP/1.1" 500 89
+⚠ Resposta inesperada para 23423: 500
+📤 Enviando 'Aula de Língua Portuguesa - 8º ano - Dia 4/3/2026' para turma sadfaf (1 aluno(s))
+Starting new HTTP connection (1): 127.0.0.1:8080
+http://127.0.0.1:8080 "POST /message/sendText/agenda HTTP/1.1" 500 89
+⚠ Resposta inesperada para 23423: 500
+📤 Enviando 'Aula de Língua Portuguesa - 8º ano - Dia 4/3/2026' para turma sadfaf (1 aluno(s))
+Starting new HTTP connection (1): 127.0.0.1:8080
+http://127.0.0.1:8080 "POST /message/sendText/agenda HTTP/1.1" 500 89
+⚠ Resposta inesperada para 23423: 500
+📤 Enviando 'Dever de sala e de casa' para turma sadfaf (1 aluno(s))
+Starting new HTTP connection (1): 127.0.0.1:8080
+http://127.0.0.1:8080 "POST /message/sendText/agenda HTTP/1.1" 500 89
+⚠ Resposta inesperada para 23423: 500
+📤 Enviando 'Slides trabalhados em sala' para turma sadfaf (1 aluno(s))
+Starting new HTTP connection (1): 127.0.0.1:8080
+http://127.0.0.1:8080 "POST /message/sendText/agenda HTTP/1.1" 500 89
+⚠ Resposta inesperada para 23423: 500
+📤 Enviando 'Perguntas - Revisão' para turma sadfaf (1 aluno(s))
+Starting new HTTP connection (1): 127.0.0.1:8080
+http://127.0.0.1:8080 "POST /message/sendText/agenda HTTP/1.1" 500 89
+⚠ Resposta inesperada para 23423: 500
+📤 Enviando 'Lista de revisão' para turma sadfaf (1 aluno(s))
+Starting new HTTP connection (1): 127.0.0.1:8080
+http://127.0.0.1:8080 "POST /message/sendText/agenda HTTP/1.1" 500 89
+⚠ Resposta inesperada para 23423: 500
+📤 Enviando 'Gabarito Lista de Revisão AV1' para turma sadfaf (1 aluno(s))
+Starting new HTTP connection (1): 127.0.0.1:8080
+http://127.0.0.1:8080 "POST /message/sendText/agenda HTTP/1.1" 500 89
+⚠ Resposta inesperada para 23423: 500
+✅ Envio finalizado
+✅ Processo finalizado
+
+
+não esta sendo enviado via whatsap e não foi inserido no WhatsAppEnvio
+e no momento do envio juntar todos os eventos em um mensagem so para enviar apenas uma mensagem via whatsap para não parecer mensagem de spam
