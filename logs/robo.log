@@ -116,3 +116,27 @@ Timeout 30000ms exceeded.
 Starting new HTTP connection (1): 127.0.0.1:8080
 http://127.0.0.1:8080 "POST /message/sendText/agenda HTTP/1.1" 201 199
 Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+Not Found: /
+Invalid HTTP_HOST header: '7d188e3c-7ca8-4255-92f7-df080e8ddf93-00-28i4n96la5wwm.picard.replit.dev'. You may need to add '7d188e3c-7ca8-4255-92f7-df080e8ddf93-00-28i4n96la5wwm.picard.replit.dev' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/django/utils/deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/django/middleware/common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/django/http/request.py", line 202, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: '7d188e3c-7ca8-4255-92f7-df080e8ddf93-00-28i4n96la5wwm.picard.replit.dev'. You may need to add '7d188e3c-7ca8-4255-92f7-df080e8ddf93-00-28i4n96la5wwm.picard.replit.dev' to ALLOWED_HOSTS.
+Not Found: /favicon.ico
+/home/runner/workspace/core/settings.py changed, reloading.
+Watching for file changes with StatReloader
+Not Found: /
+Not Found: /
+Watching for file changes with StatReloader
+Not Found: /
+Not Found: /
