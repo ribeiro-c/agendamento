@@ -1,3 +1,4 @@
+import playwright
 from playwright.sync_api import sync_playwright
 from datetime import datetime, timedelta
 import logging
@@ -82,11 +83,7 @@ def extrair_eventos(login, senha):
 
         with sync_playwright() as p:
 
-            browser = p.chromium.launch(
-                headless=True,
-                args=["--disable-blink-features=AutomationControlled"]
-            )
-
+            browser = p.chromium.launch(headless=True)
             context = browser.new_context()
             page = context.new_page()
 
@@ -111,9 +108,15 @@ def extrair_eventos(login, senha):
                 page.get_by_role("textbox", name="Senha").fill(senha)
 
                 delay()
-
                 page.get_by_role("button", name="ENTRAR").click()
-                page.wait_for_load_state("networkidle")
+                delay()
+                page.get_by_role("button", name="AVANÇAR").click()
+                delay()
+                page.locator("div").filter(has_text="Que bom ter você aqui no Meu").nth(1).click()
+                delay()
+                page.get_by_role("button").nth(1).click()
+
+
 
                 salvar_cookies(context)
 
@@ -122,8 +125,10 @@ def extrair_eventos(login, senha):
             # ----------------------------
             # IR PARA AGENDA
             # ----------------------------
-
             page.goto("https://mb4.bernoulli.com.br/minhaarea/agenda")
+            delay()
+            page.goto("https://mb4.bernoulli.com.br/minhaarea/agenda")
+            delay()
             page.wait_for_selector(".calendario-table-days")
 
             logger.info("📅 Lendo agenda")
@@ -149,7 +154,12 @@ def extrair_eventos(login, senha):
                     if not (hoje <= data.date() <= limite):
                         continue
 
-                    numero_dia = dia.query_selector(".day").inner_text()
+                    day_el = dia.query_selector(".day")
+
+                    if not day_el:
+                        continue
+
+                    numero_dia = day_el.inner_text()
 
                     eventos = dia.query_selector_all(".tag-circle")
 
