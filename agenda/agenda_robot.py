@@ -1,4 +1,3 @@
-import playwright
 from playwright.sync_api import sync_playwright
 from datetime import datetime, timedelta
 import logging
@@ -11,6 +10,29 @@ import traceback
 logger = logging.getLogger(__name__)
 
 COOKIES_PATH = "agenda/storage/cookies.json"
+
+
+# -------------------------------
+# FECHAR MODAL TUTORIAL
+# -------------------------------
+
+def fechar_tutorial(page):
+    """
+    Fecha o modal de tutorial do Bernoulli, caso esteja visível.
+    O botão de fechar tem o atributo tooltip="Desabilitar tutorial".
+    """
+    try:
+        modal = page.locator(".TutorialInitial")
+        modal.wait_for(state="visible", timeout=4000)
+
+        btn_fechar = page.locator('[tooltip="Desabilitar tutorial"] button')
+        btn_fechar.click()
+
+        modal.wait_for(state="hidden", timeout=4000)
+        logger.info("🚪 Modal de tutorial fechado")
+
+    except Exception:
+        pass  # Modal não apareceu — segue normalmente
 
 
 # -------------------------------
@@ -109,26 +131,21 @@ def extrair_eventos(login, senha):
 
                 delay()
                 page.get_by_role("button", name="ENTRAR").click()
-                delay()
-                page.get_by_role("button", name="AVANÇAR").click()
-                delay()
-                page.locator("div").filter(has_text="Que bom ter você aqui no Meu").nth(1).click()
-                delay()
-                page.get_by_role("button").nth(1).click()
+                page.wait_for_load_state("networkidle")
 
-
+                fechar_tutorial(page)
 
                 salvar_cookies(context)
 
             delay()
+            fechar_tutorial(page)
 
             # ----------------------------
             # IR PARA AGENDA
             # ----------------------------
             page.goto("https://mb4.bernoulli.com.br/minhaarea/agenda")
-            delay()
-            page.goto("https://mb4.bernoulli.com.br/minhaarea/agenda")
-            delay()
+            page.wait_for_load_state("networkidle")
+            fechar_tutorial(page)
             page.wait_for_selector(".calendario-table-days")
 
             logger.info("📅 Lendo agenda")
