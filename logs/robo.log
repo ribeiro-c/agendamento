@@ -1441,3 +1441,11 @@ Forbidden (CSRF token from POST incorrect.): /login/
 Not Found: /favicon.ico
 Watching for file changes with StatReloader
 Watching for file changes with StatReloader
+/home/runner/workspace/agenda/views/views_login.py changed, reloading.
+Watching for file changes with StatReloader
+/home/runner/workspace/core/settings.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+Method Not Allowed (GET): /logout/
+/home/runner/workspace/agenda/views/views_login.py changed, reloading.
+Watching for file changes with StatReloader

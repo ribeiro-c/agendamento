@@ -61,5 +61,8 @@ def login_view(request):  # ✅ Evite sobrescrever 'login'
 from django.contrib.auth.views import LogoutView
 
 class CustomLogoutView(LogoutView):
+    next_page = '/'
+    http_method_names = ['get', 'post', 'options']
+
     def get(self, request, *args, **kwargs):
         return self.post(request, *args, **kwargs)
