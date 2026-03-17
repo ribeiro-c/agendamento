@@ -1,0 +1,96 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Entrar — Agenda Escolar</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+  <style>
+    body {
+      background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 50%, #212529 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .card-login {
+      width: 100%;
+      max-width: 400px;
+      border: none;
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+    }
+  </style>
+</head>
+<body>
+
+<div class="card card-login p-4 p-md-5 mx-3">
+
+  <div class="text-center mb-4">
+    <i class="bi bi-calendar2-week display-4 text-primary"></i>
+    <h4 class="fw-bold mt-2 mb-0">Agenda Escolar</h4>
+    <small class="text-muted">Faça login para continuar</small>
+  </div>
+
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-danger d-flex align-items-center gap-2 py-2" role="alert">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        <span>{{ message }}</span>
+      </div>
+    {% endfor %}
+  {% endif %}
+
+  <form method="post" action="{% url 'login' %}">
+    {% csrf_token %}
+
+    <div class="mb-3">
+      <label for="username" class="form-label fw-semibold">Usuário</label>
+      <div class="input-group">
+        <span class="input-group-text bg-light border-end-0">
+          <i class="bi bi-person text-muted"></i>
+        </span>
+        <input
+          type="text"
+          id="username"
+          name="username"
+          class="form-control border-start-0"
+          placeholder="Nome de usuário"
+          autocomplete="username"
+          required
+          autofocus
+        >
+      </div>
+    </div>
+
+    <div class="mb-4">
+      <label for="password" class="form-label fw-semibold">Senha</label>
+      <div class="input-group">
+        <span class="input-group-text bg-light border-end-0">
+          <i class="bi bi-lock text-muted"></i>
+        </span>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          class="form-control border-start-0"
+          placeholder="Sua senha"
+          autocomplete="current-password"
+          required
+        >
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold">
+      <i class="bi bi-box-arrow-in-right me-2"></i>Entrar
+    </button>
+
+  </form>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
