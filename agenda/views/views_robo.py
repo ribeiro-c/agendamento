@@ -30,9 +30,9 @@ def _executar_sync():
             _status['conexoes_processadas'] = resultado.get('conexoes', 0)
             _status['erro'] = None
             _status['ultima_execucao'] = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
-        logger.info(f"✅ Robô concluído: {resultado}")
+        logger.info(f" Robô concluído: {resultado}")
     except Exception as e:
-        logger.error(f"❌ Erro no robô: {e}")
+        logger.error(f" Erro no robô: {e}")
         with _status_lock:
             _status['rodando'] = False
             _status['erro'] = str(e)
