@@ -1,0 +1,53 @@
+body.dark-mode {
+    background-color: #212529;
+    color: #f8f9fa;
+}
+body.dark-mode .card {
+    background-color: #2b3035;
+    border-color: #444;
+    color: #f8f9fa;
+}
+body.dark-mode .table {
+    color: #f8f9fa;
+}
+body.dark-mode .navbar {
+    background-color: #1a1d20 !important;
+}
+body.dark-mode .modal-content {
+    background-color: #2b3035;
+    color: #f8f9fa;
+}
+body.dark-mode .form-control,
+body.dark-mode .form-select {
+    background-color: #343a40;
+    color: #f8f9fa;
+    border-color: #555;
+}
+body.dark-mode .list-group-item {
+    background-color: #2b3035;
+    color: #f8f9fa;
+    border-color: #444;
+}
+body.dark-mode a {
+    color: #6ea8fe;
+}
+body.dark-mode .text-muted {
+    color: #adb5bd !important;
+}
+body.dark-mode .btn-outline-secondary {
+    color: #adb5bd;
+    border-color: #adb5bd;
+}
+body.dark-mode .dropdown-menu {
+    background-color: #2b3035;
+    border-color: #444;
+}
+body.dark-mode .dropdown-item {
+    color: #f8f9fa;
+}
+body.dark-mode .dropdown-item:hover {
+    background-color: #343a40;
+}
+body.dark-mode hr {
+    border-color: #444;
+}

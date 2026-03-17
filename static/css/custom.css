@@ -1,0 +1,23 @@
+/* Custom styles for Agenda Escolar */
+.card {
+    transition: box-shadow 0.2s;
+}
+.card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+.badge-tipo {
+    font-size: 0.75rem;
+}
+.table td, .table th {
+    vertical-align: middle;
+}
+.btn-sm {
+    border-radius: 50px;
+}
+.alert-messages {
+    position: fixed;
+    top: 70px;
+    right: 20px;
+    z-index: 1055;
+    max-width: 400px;
+}
