@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 @login_required
 def escola_list(request):
     escolas = Escola.objects.all()
-    return render(request, 'cal/escola_list.html', {'escolas': escolas})
+    return render(request, 'escola/list.html', {'escolas': escolas})
 
 
 @login_required
@@ -21,7 +21,7 @@ def escola_nova(request):
             return redirect('cal:escola_list')
     else:
         form = EscolaForm()
-    return render(request, 'cal/escola_form.html', {'form': form})
+    return render(request, 'escola/form.html', {'form': form, 'titulo': 'Nova Escola'})
 
 
 @login_required
@@ -35,7 +35,7 @@ def escola_update(request, pk):
             return redirect('cal:escola_list')
     else:
         form = EscolaForm(instance=escola)
-    return render(request, 'cal/escola_form.html', {'form': form})
+    return render(request, 'escola/form.html', {'form': form, 'titulo': 'Editar Escola'})
 
 
 @login_required
@@ -45,4 +45,4 @@ def escola_delete(request, pk):
         escola.delete()
         messages.success(request, 'Escola excluída com sucesso!')
         return redirect('cal:escola_list')
-    return render(request, 'cal/escola_confirm_delete.html', {'escola': escola})
+    return render(request, 'escola/confirm_delete.html', {'escola': escola})
