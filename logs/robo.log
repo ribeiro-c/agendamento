@@ -1180,3 +1180,262 @@ Watching for file changes with StatReloader
 /home/runner/workspace/agenda/urls.py changed, reloading.
 Watching for file changes with StatReloader
 Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+Internal Server Error: /alunos/1/editar/
+Traceback (most recent call last):
+  File "/home/suporte/dev/dever/venv/lib/python3.10/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+  File "/home/suporte/dev/dever/venv/lib/python3.10/site-packages/django/db/backends/sqlite3/base.py", line 360, in execute
+    return super().execute(query, params)
+sqlite3.IntegrityError: NOT NULL constraint failed: agenda_aluno.criado_em
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/suporte/dev/dever/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/home/suporte/dev/dever/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/home/suporte/dev/dever/venv/lib/python3.10/site-packages/django/contrib/auth/decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/home/suporte/dev/dever/agenda/views/views_aluno.py", line 30, in aluno_update
+    form.save()
+  File "/home/suporte/dev/dever/venv/lib/python3.10/site-packages/django/forms/models.py", line 554, in save
+    self.instance.save()
+  File "/home/suporte/dev/dever/venv/lib/python3.10/site-packages/django/db/models/base.py", line 902, in save
+    self.save_base(
+  File "/home/suporte/dev/dever/venv/lib/python3.10/site-packages/django/db/models/base.py", line 1008, in save_base
+    updated = self._save_table(
+  File "/home/suporte/dev/dever/venv/lib/python3.10/site-packages/django/db/models/base.py", line 1138, in _save_table
+    updated = self._do_update(
+  File "/home/suporte/dev/dever/venv/lib/python3.10/site-packages/django/db/models/base.py", line 1203, in _do_update
+    return filtered._update(values) > 0
+  File "/home/suporte/dev/dever/venv/lib/python3.10/site-packages/django/db/models/query.py", line 1288, in _update
+    return query.get_compiler(self.db).execute_sql(ROW_COUNT)
+  File "/home/suporte/dev/dever/venv/lib/python3.10/site-packages/django/db/models/sql/compiler.py", line 2060, in execute_sql
+    row_count = super().execute_sql(result_type)
+  File "/home/suporte/dev/dever/venv/lib/python3.10/site-packages/django/db/models/sql/compiler.py", line 1623, in execute_sql
+    cursor.execute(sql, params)
+  File "/home/suporte/dev/dever/venv/lib/python3.10/site-packages/django/db/backends/utils.py", line 122, in execute
+    return super().execute(sql, params)
+  File "/home/suporte/dev/dever/venv/lib/python3.10/site-packages/django/db/backends/utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+  File "/home/suporte/dev/dever/venv/lib/python3.10/site-packages/django/db/backends/utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/home/suporte/dev/dever/venv/lib/python3.10/site-packages/django/db/backends/utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+  File "/home/suporte/dev/dever/venv/lib/python3.10/site-packages/django/db/utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/home/suporte/dev/dever/venv/lib/python3.10/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+  File "/home/suporte/dev/dever/venv/lib/python3.10/site-packages/django/db/backends/sqlite3/base.py", line 360, in execute
+    return super().execute(query, params)
+django.db.utils.IntegrityError: NOT NULL constraint failed: agenda_aluno.criado_em
+Internal Server Error: /turmas/1/editar/
+Traceback (most recent call last):
+  File "/home/suporte/dev/dever/venv/lib/python3.10/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+  File "/home/suporte/dev/dever/venv/lib/python3.10/site-packages/django/db/backends/sqlite3/base.py", line 360, in execute
+    return super().execute(query, params)
+sqlite3.IntegrityError: NOT NULL constraint failed: agenda_turma.criado_em
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/suporte/dev/dever/venv/lib/python3.10/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/home/suporte/dev/dever/venv/lib/python3.10/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/home/suporte/dev/dever/venv/lib/python3.10/site-packages/django/contrib/auth/decorators.py", line 59, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+  File "/home/suporte/dev/dever/agenda/views/views_turma.py", line 30, in turma_update
+    form.save()
+  File "/home/suporte/dev/dever/venv/lib/python3.10/site-packages/django/forms/models.py", line 554, in save
+    self.instance.save()
+  File "/home/suporte/dev/dever/venv/lib/python3.10/site-packages/django/db/models/base.py", line 902, in save
+    self.save_base(
+  File "/home/suporte/dev/dever/venv/lib/python3.10/site-packages/django/db/models/base.py", line 1008, in save_base
+    updated = self._save_table(
+  File "/home/suporte/dev/dever/venv/lib/python3.10/site-packages/django/db/models/base.py", line 1138, in _save_table
+    updated = self._do_update(
+  File "/home/suporte/dev/dever/venv/lib/python3.10/site-packages/django/db/models/base.py", line 1203, in _do_update
+    return filtered._update(values) > 0
+  File "/home/suporte/dev/dever/venv/lib/python3.10/site-packages/django/db/models/query.py", line 1288, in _update
+    return query.get_compiler(self.db).execute_sql(ROW_COUNT)
+  File "/home/suporte/dev/dever/venv/lib/python3.10/site-packages/django/db/models/sql/compiler.py", line 2060, in execute_sql
+    row_count = super().execute_sql(result_type)
+  File "/home/suporte/dev/dever/venv/lib/python3.10/site-packages/django/db/models/sql/compiler.py", line 1623, in execute_sql
+    cursor.execute(sql, params)
+  File "/home/suporte/dev/dever/venv/lib/python3.10/site-packages/django/db/backends/utils.py", line 122, in execute
+    return super().execute(sql, params)
+  File "/home/suporte/dev/dever/venv/lib/python3.10/site-packages/django/db/backends/utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+  File "/home/suporte/dev/dever/venv/lib/python3.10/site-packages/django/db/backends/utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/home/suporte/dev/dever/venv/lib/python3.10/site-packages/django/db/backends/utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+  File "/home/suporte/dev/dever/venv/lib/python3.10/site-packages/django/db/utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/home/suporte/dev/dever/venv/lib/python3.10/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+  File "/home/suporte/dev/dever/venv/lib/python3.10/site-packages/django/db/backends/sqlite3/base.py", line 360, in execute
+    return super().execute(query, params)
+django.db.utils.IntegrityError: NOT NULL constraint failed: agenda_turma.criado_em
+✅ Aluno Aluno 7A — Slides trabalhados em sala — concluida=True
+✅ Aluno Aluno 7A — Aula de Língua Portuguesa - 8º ano - Dia 4/3/2026 — concluida=True
+⬜ Aluno Aluno 7A — Slides trabalhados em sala — concluida=False
+⬜ Aluno Aluno 7A — Aula de Língua Portuguesa - 8º ano - Dia 4/3/2026 — concluida=False
+🚀 Iniciando robô
+🚀 Iniciando sincronização da agenda
+🔎 Buscando conexões: 1 encontradas
+🏫 Processando turma: 181M
+🤖 Iniciando robô
+Using selector: EpollSelector
+⚠️ Cookies inválidos. Ignorando.
+🔐 Fazendo login com usuário e senha
+❌ Erro no robô: Timeout 30000ms exceeded.
+📊 Total eventos coletados: 0
+📅 Eventos encontrados: 0
+💾 Eventos salvos: 0 | Ignorados (já existentes): 0
+✅ Processo finalizado
+🚀 Iniciando robô
+🚀 Iniciando sincronização da agenda
+🔎 Buscando conexões: 1 encontradas
+🏫 Processando turma: 181M
+🤖 Iniciando robô
+Using selector: EpollSelector
+🔐 Fazendo login com usuário e senha
+❌ Erro crítico no robô: Timeout 30000ms exceeded.
+=========================== logs ===========================
+waiting for navigation to "**/minhaarea**" until 'load'
+  navigated to "https://mb4.bernoulli.com.br/login"
+  navigated to "https://mb4.bernoulli.com.br/"
+============================================================
+📊 Total eventos coletados: 0
+📅 Eventos encontrados: 0
+💾 Eventos salvos: 0 | Ignorados (já existentes): 0
+✅ Processo finalizado
+🚀 Iniciando robô
+🚀 Iniciando sincronização da agenda
+🔎 Buscando conexões: 1 encontradas
+🏫 Processando turma: 181M
+🤖 Iniciando robô
+Using selector: EpollSelector
+🔐 Fazendo login com usuário e senha
+🚪 Modal de tutorial fechado
+💾 Cookies salvos
+Future exception was never retrieved
+future: <Future finished exception=TargetClosedError('Target page, context or browser has been closed')>
+playwright._impl._errors.TargetClosedError: Target page, context or browser has been closed
+🚀 Iniciando robô
+🚀 Iniciando sincronização da agenda
+🔎 Buscando conexões: 1 encontradas
+🏫 Processando turma: 181M
+🤖 Iniciando robô
+Using selector: EpollSelector
+🍪 Cookies carregados com sucesso
+⚡ Login via cookies
+🚪 Modal de tutorial fechado
+📅 Navegando para agenda...
+⏳ Aguardando carregamento do calendário...
+📅 Calendário carregado, iniciando leitura de eventos
+Processando semana 1
+Processando semana 2
+Processando semana 3
+📆 Dia 17/3 tem 7 evento(s)
+📌 Evento capturado: Aula de Língua Portuguesa - 8º ano - Dia 4/3/2026...
+📌 Evento capturado: Aula de Língua Portuguesa - 8º ano - Dia 4/3/2026...
+📌 Evento capturado: Dever de sala e de casa...
+📌 Evento capturado: Slides trabalhados em sala...
+📌 Evento capturado: Perguntas - Revisão...
+📌 Evento capturado: Lista de revisão...
+📌 Evento capturado: Gabarito Lista de Revisão AV1...
+📆 Dia 18/3 tem 7 evento(s)
+📌 Evento capturado: Aula de Língua Portuguesa - 8º ano - Dia 4/3/2026...
+📌 Evento capturado: Aula de Língua Portuguesa - 8º ano - Dia 4/3/2026...
+📌 Evento capturado: Dever de sala e de casa...
+📌 Evento capturado: Slides trabalhados em sala...
+📌 Evento capturado: Perguntas - Revisão...
+📌 Evento capturado: Lista de revisão...
+📌 Evento capturado: Gabarito Lista de Revisão AV1...
+📆 Dia 19/3 tem 7 evento(s)
+📌 Evento capturado: Aula de Língua Portuguesa - 8º ano - Dia 4/3/2026...
+📌 Evento capturado: Aula de Língua Portuguesa - 8º ano - Dia 4/3/2026...
+📌 Evento capturado: Dever de sala e de casa...
+📌 Evento capturado: Slides trabalhados em sala...
+📌 Evento capturado: Perguntas - Revisão...
+📌 Evento capturado: Lista de revisão...
+📌 Evento capturado: Gabarito Lista de Revisão AV1...
+📆 Dia 20/3 tem 7 evento(s)
+📌 Evento capturado: Aula de Língua Portuguesa - 8º ano - Dia 4/3/2026...
+📌 Evento capturado: Aula de Língua Portuguesa - 8º ano - Dia 4/3/2026...
+📌 Evento capturado: Dever de sala e de casa...
+📌 Evento capturado: Slides trabalhados em sala...
+📌 Evento capturado: Perguntas - Revisão...
+📌 Evento capturado: Lista de revisão...
+📌 Evento capturado: Gabarito Lista de Revisão AV1...
+Processando semana 4
+Processando semana 5
+Processando semana 6
+✅ Navegador fechado
+📊 Total eventos coletados: 28
+📅 Eventos encontrados: 28
+💾 Evento salvo: Aula de Língua Portuguesa - 8º ano - Dia 4/3/2026
+💾 Evento salvo: Aula de Língua Portuguesa - 8º ano - Dia 4/3/2026
+💾 Evento salvo: Dever de sala e de casa
+💾 Evento salvo: Slides trabalhados em sala
+💾 Evento salvo: Perguntas - Revisão
+💾 Evento salvo: Lista de revisão
+💾 Evento salvo: Gabarito Lista de Revisão AV1
+💾 Evento salvo: Aula de Língua Portuguesa - 8º ano - Dia 4/3/2026
+💾 Evento salvo: Aula de Língua Portuguesa - 8º ano - Dia 4/3/2026
+💾 Evento salvo: Dever de sala e de casa
+💾 Evento salvo: Slides trabalhados em sala
+💾 Evento salvo: Perguntas - Revisão
+💾 Evento salvo: Lista de revisão
+💾 Evento salvo: Gabarito Lista de Revisão AV1
+💾 Evento salvo: Aula de Língua Portuguesa - 8º ano - Dia 4/3/2026
+💾 Evento salvo: Aula de Língua Portuguesa - 8º ano - Dia 4/3/2026
+💾 Evento salvo: Dever de sala e de casa
+💾 Evento salvo: Slides trabalhados em sala
+💾 Evento salvo: Perguntas - Revisão
+💾 Evento salvo: Lista de revisão
+💾 Evento salvo: Gabarito Lista de Revisão AV1
+💾 Evento salvo: Aula de Língua Portuguesa - 8º ano - Dia 4/3/2026
+💾 Evento salvo: Aula de Língua Portuguesa - 8º ano - Dia 4/3/2026
+💾 Evento salvo: Dever de sala e de casa
+💾 Evento salvo: Slides trabalhados em sala
+💾 Evento salvo: Perguntas - Revisão
+💾 Evento salvo: Lista de revisão
+💾 Evento salvo: Gabarito Lista de Revisão AV1
+💾 Eventos salvos: 28 | Ignorados (já existentes): 0
+✅ Processo finalizado
+🚀 Iniciando robô
+🚀 Iniciando sincronização da agenda
+🔎 Buscando conexões: 1 encontradas
+🏫 Processando turma: 181M
+🤖 Iniciando robô
+Using selector: EpollSelector
+🍪 Cookies carregados com sucesso
+⚡ Login via cookies
+🚪 Modal de tutorial fechado
+📅 Navegando para agenda...
+⏳ Aguardando carregamento do calendário...
+📅 Calendário carregado, iniciando leitura de eventos
+Processando semana 1
+Processando semana 2
+Processando semana 3
+Processando semana 4
+Processando semana 5
+Processando semana 6
+✅ Navegador fechado
+📊 Total eventos coletados: 0
+📅 Eventos encontrados: 0
+💾 Eventos salvos: 0 | Ignorados (já existentes): 0
+✅ Processo finalizado
+Watching for file changes with StatReloader
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Forbidden (CSRF token from POST incorrect.): /login/
+Not Found: /favicon.ico

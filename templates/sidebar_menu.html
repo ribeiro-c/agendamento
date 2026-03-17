@@ -19,7 +19,8 @@
         <i class="bi bi-journal-check fs-5"></i>
         <span>Minhas Tarefas</span>
     </a>
-
+{# ── Admin (staff only) ────────────────────────────────────────────────── #}
+    {% if user.is_staff %}
     <a href="{% url 'cal:agenda_list' %}"
        class="sidebar-link d-flex align-items-center gap-2 px-3 py-2 text-white text-decoration-none
               {% if 'agenda' in request.resolver_match.url_name|default:'' %}active{% endif %}">
@@ -67,8 +68,7 @@
         <span>WhatsApp</span>
     </a>
 
-    {# ── Admin (staff only) ────────────────────────────────────────────────── #}
-    {% if user.is_staff %}
+    
     <div class="px-3 pt-3 pb-1">
         <span class="text-uppercase text-secondary" style="font-size:.7rem;letter-spacing:.08em;">Administração</span>
     </div>
