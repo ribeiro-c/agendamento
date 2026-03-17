@@ -1,0 +1,164 @@
+Você é um engenheiro sênior Django especializado em refatoração de projetos existentes.
+
+Estou reestruturando uma aplicação Django que extrai tarefas escolares de uma agenda online.
+
+IMPORTANTE:
+
+* NÃO ativar AutoAgent
+* Trabalhar apenas analisando arquivos existentes
+* Fazer alterações seguras e progressivas
+* Explicar quais arquivos foram modificados
+
+OBJETIVO DA REESTRUTURAÇÃO
+
+Vamos DESATIVAR temporariamente toda a parte de envio de mensagens via WhatsApp.
+
+O foco agora será:
+
+1. Extrair tarefas da agenda (isso já funciona)
+2. Salvar no banco de dados
+3. Exibir tarefas em páginas HTML
+4. Permitir que cada aluno marque tarefas como concluídas
+5. Interface responsiva para celular e computador
+6. Botão AJAX para marcar tarefa sem recarregar a página
+
+ARQUITETURA ATUAL DO PROJETO
+
+Models principais:
+
+Escola
+Turma
+Aluno
+ConexaoAgenda
+AgendaEvento
+
+A model AgendaEvento representa as tarefas da agenda.
+
+NOVA FUNCIONALIDADE
+
+Cada aluno deve poder marcar se completou uma tarefa.
+
+Crie uma nova model:
+
+TarefaCompleta
+
+Campos:
+
+* aluno (ForeignKey para Aluno)
+* evento (ForeignKey para AgendaEvento)
+* concluida (BooleanField)
+* atualizado_em (DateTimeField auto_now=True)
+
+Regra importante:
+
+Um aluno só pode ter UM registro por tarefa.
+
+Use:
+
+unique_together = ("aluno", "evento")
+
+FLUXO DA APLICAÇÃO
+
+1. O robô extrai eventos da agenda
+2. Os eventos são salvos em AgendaEvento
+3. O aluno acessa a página de tarefas
+4. A página lista as tarefas da turma
+5. Cada tarefa tem um botão:
+
+"Marcar como concluída"
+
+6. O botão usa AJAX
+7. Atualiza TarefaCompleta sem recarregar a página
+
+DESATIVAR WHATSAPP
+
+Comentar ou desativar temporariamente:
+
+* models relacionados a WhatsAppEnvio
+* services de envio
+* robô de envio
+* chamadas nas views
+* tarefas de envio
+
+Mas NÃO apagar os arquivos.
+
+Apenas comentar para possível reativação futura.
+
+PÁGINAS HTML NECESSÁRIAS
+
+Criar ou ajustar:
+
+templates/
+
+base.html
+menu.html
+tarefas.html
+tarefa_item.html
+
+Requisitos:
+
+* Bootstrap 5
+* responsivo
+* lista de tarefas
+* botão AJAX
+
+AJAX
+
+O botão deve chamar:
+
+POST /tarefa/concluir/
+
+enviando:
+
+evento_id
+aluno_id
+
+Resposta JSON:
+
+{
+"status": "ok",
+"concluida": true
+}
+
+AJUSTES NECESSÁRIOS
+
+Verificar e corrigir:
+
+models.py
+forms.py
+views.py
+urls.py
+templates
+menu de navegação
+
+Também verificar imports quebrados ou funções não utilizadas.
+
+ORGANIZAÇÃO DO PROJETO
+
+Gerar um pequeno mapa da aplicação:
+
+arquivo -> função -> o que faz -> quem chama
+
+Exemplo:
+
+views_tarefas.py
+listar_tarefas() -> lista tarefas da turma
+
+views_ajax.py
+marcar_tarefa() -> salva tarefa concluída via AJAX
+
+OBJETIVO FINAL
+
+Aplicação Django onde:
+
+* tarefas são extraídas da agenda
+* alunos visualizam tarefas online
+* alunos marcam tarefas concluídas
+* interface responsiva
+* botão AJAX sem recarregar a página
+
+Antes de alterar arquivos:
+
+1. Liste arquivos que serão modificados
+2. Explique o motivo da alteração
+3. Depois gere o código atualizado.

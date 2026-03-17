@@ -1,12 +1,93 @@
 from django import forms
+from django.contrib.auth.models import User
 from .models import (
     Escola,
     Turma,
     Aluno,
     ConexaoAgenda,
     AgendaEvento,
-    WhatsAppEnvio
+    WhatsAppEnvio,
+    TarefaCompleta,
 )
+
+
+# ===============================
+# 👤 REGISTRO DE USUÁRIO
+# ===============================
+
+class UserRegisterForm(forms.ModelForm):
+
+    password = forms.CharField(
+        widget=forms.PasswordInput(attrs={
+            "class": "form-control",
+            "placeholder": "Senha"
+        }),
+        label="Senha"
+    )
+
+    class Meta:
+        model = User
+        fields = ["username", "email", "password"]
+        widgets = {
+            "username": forms.TextInput(attrs={
+                "class": "form-control",
+                "placeholder": "Nome de usuário"
+            }),
+            "email": forms.EmailInput(attrs={
+                "class": "form-control",
+                "placeholder": "email@exemplo.com"
+            }),
+        }
+
+
+# ===============================
+# 👤 GERENCIAMENTO DE USUÁRIO
+# ===============================
+
+class UsuarioForm(forms.ModelForm):
+
+    class Meta:
+        model = User
+        fields = ["username", "email", "first_name", "last_name", "is_staff"]
+        widgets = {
+            "username": forms.TextInput(attrs={"class": "form-control"}),
+            "email": forms.EmailInput(attrs={"class": "form-control"}),
+            "first_name": forms.TextInput(attrs={"class": "form-control"}),
+            "last_name": forms.TextInput(attrs={"class": "form-control"}),
+            "is_staff": forms.CheckboxInput(attrs={"class": "form-check-input"}),
+        }
+
+
+class UsuarioUpdateForm(forms.ModelForm):
+
+    class Meta:
+        model = User
+        fields = ["username", "email", "first_name", "last_name"]
+        widgets = {
+            "username": forms.TextInput(attrs={"class": "form-control"}),
+            "email": forms.EmailInput(attrs={"class": "form-control"}),
+            "first_name": forms.TextInput(attrs={"class": "form-control"}),
+            "last_name": forms.TextInput(attrs={"class": "form-control"}),
+        }
+
+
+class UsuarioPasswordResetForm(forms.Form):
+
+    nova_senha = forms.CharField(
+        widget=forms.PasswordInput(attrs={"class": "form-control", "placeholder": "Nova senha"}),
+        label="Nova Senha"
+    )
+
+    confirmar_senha = forms.CharField(
+        widget=forms.PasswordInput(attrs={"class": "form-control", "placeholder": "Confirmar nova senha"}),
+        label="Confirmar Senha"
+    )
+
+    def clean(self):
+        dados = super().clean()
+        if dados.get("nova_senha") != dados.get("confirmar_senha"):
+            raise forms.ValidationError("As senhas não coincidem.")
+        return dados
 
 
 # ===============================

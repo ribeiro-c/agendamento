@@ -33,6 +33,11 @@
                     {% if user.is_authenticated %}
                     <!-- Navbar -->
 <li class="nav-item">
+    <a class="nav-link" href="{% url 'cal:home' %}">
+      <i class="bi bi-journal-check"></i> Tarefas
+    </a>
+</li>
+<li class="nav-item">
     <a class="nav-link" href="{% url 'cal:calendar' %}">
       <i class="bi bi-calendar-event"></i> Calendário
     </a>

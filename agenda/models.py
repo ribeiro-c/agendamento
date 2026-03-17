@@ -140,6 +140,30 @@ class AgendaEvento(models.Model):
 
         return f"{self.data} - {self.titulo}"
     
+class TarefaCompleta(models.Model):
+
+    aluno = models.ForeignKey(
+        Aluno,
+        on_delete=models.CASCADE
+    )
+
+    evento = models.ForeignKey(
+        AgendaEvento,
+        on_delete=models.CASCADE
+    )
+
+    concluida = models.BooleanField(default=False)
+
+    atualizado_em = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ("aluno", "evento")
+
+    def __str__(self):
+        status = "✅" if self.concluida else "⬜"
+        return f"{status} {self.aluno} — {self.evento.titulo}"
+
+
 class WhatsAppEnvio(models.Model):
 
     turma = models.ForeignKey(

@@ -3,7 +3,7 @@ import traceback
 
 from agenda.agenda_robot import extrair_eventos
 from agenda.services.salvar_eventos_service import salvar_eventos
-from agenda.services.envio_service import enviar_tarefas
+# from agenda.services.envio_service import enviar_tarefas  # ⏸ WhatsApp desativado temporariamente
 from agenda.models import ConexaoAgenda
 
 logger = logging.getLogger(__name__)
@@ -38,9 +38,10 @@ def sincronizar_agenda():
                 f"Ignorados (já existentes): {resultado['ignorados']}"
             )
 
-        if conexoes.exists():
-            logger.info("📤 Enviando mensagens WhatsApp")
-            enviar_tarefas()
+        # ⏸ Envio WhatsApp desativado temporariamente
+        # if conexoes.exists():
+        #     logger.info("📤 Enviando mensagens WhatsApp")
+        #     enviar_tarefas()
 
     except Exception as e:
 

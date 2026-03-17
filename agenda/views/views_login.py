@@ -10,7 +10,7 @@ import logging
 
 logger = logging.getLogger('django')
 
-from agenda.models import Categoria
+
 
 def register_view(request):
     if request.method == 'POST':
@@ -26,8 +26,7 @@ def register_view(request):
                 'Saúde', 'Educação', 'Salário', 'Investimentos',
                 'Outros'
             ]
-            for nome_cat in categorias_padrao:
-                Categoria.objects.create(user=user, nome=nome_cat)
+            
             
             login(request, user)  # login automático após cadastro
             messages.success(request, 'Cadastro realizado com sucesso!')
