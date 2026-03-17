@@ -63,28 +63,68 @@
             </a>
         </div>
 
-        <div class="aviso-box p-3">
-            <div class="d-flex align-items-start gap-2 mb-2">
-                <i class="bi bi-info-circle-fill text-warning fs-5 flex-shrink-0 mt-1"></i>
-                <strong class="text-dark" style="color:inherit !important;">Aviso importante</strong>
+        <div class="aviso-box p-4 border rounded shadow-sm bg-light">
+    <div class="d-flex align-items-center gap-2 mb-3">
+        <i class="bi bi-stars text-primary fs-4"></i>
+        <h5 class="mb-0 fw-bold text-dark">Bem-vindo(a) ao seu novo aliado!</h5>
+    </div>
+
+    <p class="text-secondary mb-4">
+        Ficamos felizes em ajudar você a organizar sua rotina. Este é um <strong>projeto independente</strong> criado para facilitar o seu dia a dia.
+    </p>
+
+    <div class="row g-3">
+        <div class="col-12">
+            <div class="d-flex gap-2">
+                <i class="bi bi-shield-check text-success"></i>
+                <div>
+                    <strong class="d-block text-dark">Independência Total</strong>
+                    <small class="text-muted">Não possuímos vínculo oficial com escolas ou secretarias. Somos uma ferramenta de apoio complementar.</small>
+                </div>
             </div>
-            <p class="mb-2">
-                Este aplicativo é uma ferramenta de apoio independente, criada para tornar o
-                acompanhamento das atividades escolares mais fácil e prático. <strong>Não possui qualquer
-                vínculo oficial</strong> com escolas, secretarias de educação ou quaisquer entidades relacionadas.
-            </p>
-            <p class="mb-2">
-                As informações exibidas são coletadas de forma automática e legal a partir de fontes
-                públicas, e armazenadas de maneira segura. Ainda assim, <strong>este app não substitui
-                o acompanhamento direto nos canais oficiais da escola</strong> — use-o como um complemento,
-                não como única fonte de consulta.
-            </p>
-            <p class="mb-0">
-                Por ser um serviço oferecido de forma voluntária, não há garantias formais de
-                disponibilidade contínua, integridade dos dados ou prazo de guarda das informações.
-                Use com bom senso e sempre confirme informações importantes diretamente com a escola.
-            </p>
         </div>
+
+        <div class="col-12">
+            <div class="d-flex gap-2">
+                <i class="bi bi-lock text-info"></i>
+                <div>
+                    <strong class="d-block text-dark">Privacidade em Primeiro Lugar</strong>
+                    <small class="text-muted">Dados coletados automaticamente apenas para o funcionamento, com total segurança e sem compartilhamento.</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 mb-3">
+            <div class="d-flex gap-2">
+                <i class="bi bi-exclamation-triangle text-warning"></i>
+                <div>
+                    <strong class="d-block text-dark">Sempre Verifique</strong>
+                    <small class="text-muted">Este app <strong>não substitui os canais oficiais</strong>. Confirme prazos e decisões críticas diretamente na fonte oficial da sua escola.</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <hr class="my-4">
+
+    <div class="text-center">
+        <p class="small text-secondary mb-3">Dúvidas ou sugestões? Adoramos ouvir nossos usuários!</p>
+        
+        <a href="https://api.whatsapp.com/send?phone=5561985731668" target="_blank" class="d-inline-block mb-3 text-decoration-none">
+            <img src="{% static 'img/qrcode.png' %}" alt="WhatsApp Contato" class="img-fluid rounded border p-2 bg-white" style="max-width: 200px;">
+            <div class="mt-2 text-success small fw-bold">
+                <i class="bi bi-whatsapp"></i> Chamar no WhatsApp
+            </div>
+        </a>
+
+        <div class="mt-4 pt-2 border-top">
+            <a href="https://ribdev.netlify.app/" target="_blank" class="d-inline-block opacity-75">
+                <img src="{% static 'img/rib.png' %}" class="img-thumbnail" alt="RIBDEV" width="80">
+            </a>
+            
+        </div>
+    </div>
+</div>
 
     </div>
 </div>
