@@ -179,7 +179,7 @@ class AlunoForm(forms.ModelForm):
 
     class Meta:
         model = Aluno
-        fields = ["turma", "nome_aluno", "usuarios"]
+        fields = ["turma", "nome_aluno", "usuarios", "telefone"]
         widgets = {
             "turma": forms.Select(
                 attrs={"class": "form-select shadow-sm border-info", "style": "border-radius:10px;"}
@@ -191,10 +191,18 @@ class AlunoForm(forms.ModelForm):
                     "style": "border-radius:10px;"
                 }
             ),
+            "telefone": forms.TextInput(
+                attrs={
+                    "class": "form-control shadow-sm border-info",
+                    "placeholder": "Ex: 5511999999999",
+                    "style": "border-radius:10px;"
+                }
+            ),
         }
         labels = {
             "turma": "Turma",
             "nome_aluno": "Nome do Aluno",
+            "telefone": "Telefone (WhatsApp)",
         }
 
 

@@ -42,6 +42,7 @@ def listar_tarefas(request):
     eventos = (
         AgendaEvento.objects
         .filter(turma=aluno.turma, data__gte=data_inicio, data__lte=data_fim)
+        .select_related("turma")
         .order_by("data")
     )
 
@@ -66,6 +67,7 @@ def listar_tarefas(request):
         "pendentes": pendentes,
         "concluidas": concluidas,
         "hoje": hoje,
+        "amanha": hoje + timedelta(days=1),
         "data_inicio": data_inicio,
         "data_fim": data_fim,
     })

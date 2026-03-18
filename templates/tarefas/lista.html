@@ -3,83 +3,185 @@
 {% block title %}Tarefas — {{ aluno.nome_aluno }}{% endblock %}
 
 {% block content %}
+<style>
+/* ── Cartões de tarefa ─────────────────────────────────────────────────────── */
+.tarefa-card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 1px 4px rgba(0,0,0,.07);
+    transition: box-shadow .2s, transform .2s, opacity .35s;
+}
+.tarefa-card:hover {
+    box-shadow: 0 4px 16px rgba(0,0,0,.12);
+    transform: translateY(-2px);
+}
+.tarefa-card.concluida-card { opacity: .65; }
+.tarefa-card.concluida-card:hover { opacity: .85; }
+
+/* Barra lateral colorida por tipo */
+.tarefa-card.tipo-prova     { border-left: 4px solid #dc3545 !important; }
+.tarefa-card.tipo-atividade { border-left: 4px solid #0d6efd !important; }
+.tarefa-card.tipo-tarefa    { border-left: 4px solid #fd7e14 !important; }
+.tarefa-card.tipo-li-o,
+.tarefa-card.tipo-licao     { border-left: 4px solid #6f42c1 !important; }
+.tarefa-card.tipo-outro     { border-left: 4px solid #6c757d !important; }
+.tarefa-card.concluida-card { border-left: 4px solid #198754 !important; }
+
+/* Badge de tipo */
+.badge-tipo {
+    font-size: .7rem;
+    font-weight: 600;
+    letter-spacing: .03em;
+    border-radius: 6px;
+    padding: 3px 8px;
+    display: inline-block;
+}
+.badge-prova     { background: #fde8ea; color: #b02a37; }
+.badge-atividade { background: #dbeafe; color: #1d4ed8; }
+.badge-tarefa    { background: #fff3cd; color: #92400e; }
+.badge-li-o,
+.badge-licao     { background: #ede9fe; color: #5b21b6; }
+.badge-outro     { background: #e9ecef; color: #495057; }
+
+/* Urgência */
+.urgencia-hoje   { background: #fff5f5 !important; }
+.urgencia-amanha { background: #fffbeb !important; }
+
+/* Título riscado nas concluídas */
+.titulo-concluido { text-decoration: line-through; color: #6c757d; }
+
+/* Botão marcar */
+.btn-marcar {
+    border-radius: 8px;
+    font-size: .82rem;
+    font-weight: 500;
+    transition: background .15s, color .15s, border-color .15s;
+}
+
+/* Seção header */
+.secao-header { display: flex; align-items: center; gap: .5rem; margin-bottom: .75rem; }
+.secao-header h5 { margin: 0; font-size: 1rem; font-weight: 700; }
+.secao-divider { flex: 1; height: 1px; background: #dee2e6; margin-left: .25rem; }
+
+/* Dark mode */
+body.dark-mode .tarefa-card          { background: #2b3035; box-shadow: 0 1px 4px rgba(0,0,0,.3); }
+body.dark-mode .tarefa-card:hover    { box-shadow: 0 4px 16px rgba(0,0,0,.4); }
+body.dark-mode .urgencia-hoje        { background: #3a2020 !important; }
+body.dark-mode .urgencia-amanha      { background: #332d1a !important; }
+body.dark-mode .badge-prova          { background: #4a1520; color: #f8a0a8; }
+body.dark-mode .badge-atividade      { background: #1e3a5f; color: #93c5fd; }
+body.dark-mode .badge-tarefa         { background: #3d2a00; color: #fcd34d; }
+body.dark-mode .badge-li-o,
+body.dark-mode .badge-licao          { background: #2e1a4a; color: #c4b5fd; }
+body.dark-mode .badge-outro          { background: #374151; color: #d1d5db; }
+body.dark-mode .secao-divider        { background: #444; }
+body.dark-mode .titulo-concluido     { color: #9ca3af; }
+</style>
+
 <div class="container-fluid py-2">
 
-    {# ── Cabeçalho + seletor de aluno ── #}
-    <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+    {# ── Cabeçalho ── #}
+    <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
         <div>
-            <h4 class="mb-0">
-                <i class="bi bi-journal-check text-primary"></i>
-                Tarefas
+            <h4 class="mb-0 fw-bold">
+                <i class="bi bi-journal-check text-primary me-1"></i>Tarefas
             </h4>
             <small class="text-muted">
-                {{ aluno.nome_aluno }}
-                {% if aluno.turma %} &mdash; {{ aluno.turma }}{% endif %}
+                {{ aluno.nome_aluno }}{% if aluno.turma %} &mdash; {{ aluno.turma }}{% endif %}
                 &bull; {{ data_inicio|date:"d/m" }} a {{ data_fim|date:"d/m/Y" }}
             </small>
         </div>
 
-        {% if alunos|length > 1 %}
-        <form method="get" class="d-flex align-items-center gap-2">
-            <label class="form-label mb-0 small fw-semibold">Aluno:</label>
-            <select name="aluno_id" class="form-select form-select-sm" onchange="this.form.submit()" style="min-width:160px;">
-                {% for a in alunos %}
-                <option value="{{ a.pk }}" {% if a.pk == aluno.pk %}selected{% endif %}>
-                    {{ a.nome_aluno }}{% if a.turma %} ({{ a.turma }}){% endif %}
-                </option>
-                {% endfor %}
-            </select>
-        </form>
-        {% endif %}
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+            {% if alunos|length > 1 %}
+            <form method="get" class="d-flex align-items-center gap-2">
+                <label class="form-label mb-0 small fw-semibold">Aluno:</label>
+                <select name="aluno_id" class="form-select form-select-sm" onchange="this.form.submit()" style="min-width:160px;">
+                    {% for a in alunos %}
+                    <option value="{{ a.pk }}" {% if a.pk == aluno.pk %}selected{% endif %}>
+                        {{ a.nome_aluno }}{% if a.turma %} ({{ a.turma }}){% endif %}
+                    </option>
+                    {% endfor %}
+                </select>
+            </form>
+            {% endif %}
+
+            <a href="{% url 'cal:tarefas_pdf' %}?aluno_id={{ aluno.pk }}"
+               class="btn btn-sm btn-outline-danger no-loader"
+               title="Baixar PDF das tarefas">
+                <i class="bi bi-file-earmark-pdf me-1"></i>
+                <span class="d-none d-sm-inline">Exportar PDF</span>
+            </a>
+        </div>
+    </div>
+
+    {# ── Resumo rápido ── #}
+    <div class="d-flex gap-3 mb-4 flex-wrap">
+        <div class="d-flex align-items-center gap-2 px-3 py-2 rounded-3 bg-danger bg-opacity-10">
+            <i class="bi bi-hourglass-split text-danger fs-5"></i>
+            <div>
+                <div class="fw-bold text-danger lh-1" id="contador-pendentes">{{ pendentes|length }}</div>
+                <div class="text-muted" style="font-size:.75rem;">pendentes</div>
+            </div>
+        </div>
+        <div class="d-flex align-items-center gap-2 px-3 py-2 rounded-3 bg-success bg-opacity-10">
+            <i class="bi bi-check2-all text-success fs-5"></i>
+            <div>
+                <div class="fw-bold text-success lh-1" id="contador-concluidas">{{ concluidas|length }}</div>
+                <div class="text-muted" style="font-size:.75rem;">concluídas</div>
+            </div>
+        </div>
     </div>
 
     {# ── Pendentes ── #}
-    <div class="mb-2 d-flex align-items-center gap-2">
-        <h5 class="mb-0 fw-semibold text-danger"><i class="bi bi-hourglass-split"></i> Pendentes</h5>
-        <span class="badge bg-danger rounded-pill">{{ pendentes|length }}</span>
+    <div class="secao-header">
+        <i class="bi bi-hourglass-split text-danger"></i>
+        <h5 class="text-danger">Pendentes</h5>
+        <div class="secao-divider"></div>
     </div>
 
     {% if not pendentes %}
-    <div class="alert alert-success d-flex align-items-center gap-2 mb-4" role="alert">
+    <div class="alert alert-success d-flex align-items-center gap-2 mb-4 rounded-3" role="alert" id="msg-sem-pendentes">
         <i class="bi bi-check-circle-fill fs-5"></i>
-        <span>Nenhuma tarefa pendente neste período. </span>
+        <span>Nenhuma tarefa pendente neste período.</span>
     </div>
-    {% else %}
+    {% endif %}
+
     <div class="row g-3 mb-4" id="lista-pendentes">
         {% for item in pendentes %}
         {% with evento=item.evento %}
-        <div class="col-12 col-md-6 col-xl-4">
-            <div class="card h-100 shadow-sm border-0 border-start border-4 border-danger" id="card-{{ evento.id }}">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start mb-2">
-                        <span class="badge
-                            {% if evento.tipo|lower == 'prova' %}bg-danger
-                            {% elif evento.tipo|lower == 'tarefa' %}bg-warning text-dark
-                            {% else %}bg-info text-dark{% endif %}">
-                            {{ evento.tipo }}
-                        </span>
-                        <small class="text-muted">
+        <div class="col-12 col-md-6 col-xl-4" id="wrapper-{{ evento.id }}">
+            <div class="card tarefa-card tipo-{{ evento.tipo|lower|slugify }}
+                        {% if evento.data == hoje %}urgencia-hoje{% elif evento.data == amanha %}urgencia-amanha{% endif %}"
+                 id="card-{{ evento.id }}">
+                <div class="card-body p-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="badge-tipo badge-{{ evento.tipo|lower|slugify }}">{{ evento.tipo }}</span>
+                        <span class="text-muted d-flex align-items-center gap-1" style="font-size:.8rem;">
                             <i class="bi bi-calendar3"></i>
                             {{ evento.data|date:"d/m/Y" }}
-                            {% if evento.data == hoje %}<span class="badge bg-danger ms-1">Hoje</span>{% endif %}
-                        </small>
+                            {% if evento.data == hoje %}
+                                <span class="badge bg-danger ms-1" style="font-size:.65rem;">Hoje</span>
+                            {% elif evento.data == amanha %}
+                                <span class="badge bg-warning text-dark ms-1" style="font-size:.65rem;">Amanhã</span>
+                            {% endif %}
+                        </span>
                     </div>
-                    <h6 class="card-title fw-bold mb-1" id="titulo-{{ evento.id }}">{{ evento.titulo }}</h6>
+                    <h6 class="fw-bold mb-1" style="font-size:.92rem;" id="titulo-{{ evento.id }}">{{ evento.titulo }}</h6>
                     {% if evento.descricao %}
                     <div class="desc-wrapper mb-3" data-id="{{ evento.id }}" data-full="{{ evento.descricao|escape }}">
-                        <p class="card-text text-muted small mb-1 desc-short" style="white-space:pre-line;"></p>
-                        <p class="card-text text-muted small mb-1 desc-full d-none" style="white-space:pre-line;"></p>
-                        <button type="button" class="btn btn-link btn-sm p-0 text-primary desc-toggle" style="font-size:.8rem;">
+                        <p class="card-text text-muted mb-1 desc-short" style="white-space:pre-line;font-size:.82rem;"></p>
+                        <p class="card-text text-muted mb-1 desc-full d-none" style="white-space:pre-line;font-size:.82rem;"></p>
+                        <button type="button" class="btn btn-link btn-sm p-0 text-primary desc-toggle" style="font-size:.75rem;">
                             <i class="bi bi-chevron-down me-1"></i>Ver mais
                         </button>
                     </div>
                     {% endif %}
-                    <button class="btn btn-sm w-100 btn-outline-success btn-marcar"
-                        data-evento-id="{{ evento.id }}"
-                        data-aluno-id="{{ aluno.id }}"
-                        id="btn-{{ evento.id }}">
-                        <i class="bi bi-check2-circle me-1" id="icon-{{ evento.id }}"></i>
-                        <span id="label-{{ evento.id }}">Marcar como concluída</span>
+                    <button class="btn btn-sm w-100 btn-outline-success btn-marcar mt-1"
+                            data-evento-id="{{ evento.id }}"
+                            data-aluno-id="{{ aluno.id }}"
+                            id="btn-{{ evento.id }}">
+                        <i class="bi bi-check2-circle me-1"></i>Marcar como concluída
                     </button>
                 </div>
             </div>
@@ -87,38 +189,36 @@
         {% endwith %}
         {% endfor %}
     </div>
-    {% endif %}
 
     {# ── Concluídas ── #}
-    <div class="mb-2 d-flex align-items-center gap-2">
-        <h5 class="mb-0 fw-semibold text-success"><i class="bi bi-check2-all"></i> Concluídas</h5>
-        <span class="badge bg-success rounded-pill">{{ concluidas|length }}</span>
+    <div class="secao-header mt-2">
+        <i class="bi bi-check2-all text-success"></i>
+        <h5 class="text-success">Concluídas</h5>
+        <div class="secao-divider"></div>
     </div>
 
     {% if not concluidas %}
-    <p class="text-muted small">Nenhuma tarefa concluída neste período.</p>
-    {% else %}
+    <p class="text-muted small" id="msg-sem-concluidas">Nenhuma tarefa concluída neste período.</p>
+    {% endif %}
+
     <div class="row g-3" id="lista-concluidas">
         {% for item in concluidas %}
         {% with evento=item.evento %}
-        <div class="col-12 col-md-6 col-xl-4 opacity-75">
-            <div class="card h-100 shadow-sm border-0 border-start border-4 border-success" id="card-{{ evento.id }}">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start mb-2">
-                        <span class="badge bg-secondary">{{ evento.tipo }}</span>
-                        <small class="text-muted">
+        <div class="col-12 col-md-6 col-xl-4" id="wrapper-{{ evento.id }}">
+            <div class="card tarefa-card concluida-card" id="card-{{ evento.id }}">
+                <div class="card-body p-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="badge-tipo badge-outro">{{ evento.tipo }}</span>
+                        <span class="text-muted" style="font-size:.8rem;">
                             <i class="bi bi-calendar3"></i> {{ evento.data|date:"d/m/Y" }}
-                        </small>
+                        </span>
                     </div>
-                    <h6 class="card-title mb-1" id="titulo-{{ evento.id }}">
-                        <s class="text-muted">{{ evento.titulo }}</s>
-                    </h6>
+                    <h6 class="titulo-concluido mb-2" style="font-size:.92rem;" id="titulo-{{ evento.id }}">{{ evento.titulo }}</h6>
                     <button class="btn btn-sm w-100 btn-outline-secondary btn-marcar"
-                        data-evento-id="{{ evento.id }}"
-                        data-aluno-id="{{ aluno.id }}"
-                        id="btn-{{ evento.id }}">
-                        <i class="bi bi-arrow-counterclockwise me-1" id="icon-{{ evento.id }}"></i>
-                        <span id="label-{{ evento.id }}">Desmarcar</span>
+                            data-evento-id="{{ evento.id }}"
+                            data-aluno-id="{{ aluno.id }}"
+                            id="btn-{{ evento.id }}">
+                        <i class="bi bi-arrow-counterclockwise me-1"></i>Desmarcar
                     </button>
                 </div>
             </div>
@@ -126,7 +226,6 @@
         {% endwith %}
         {% endfor %}
     </div>
-    {% endif %}
 
 </div>
 {% endblock %}
@@ -139,84 +238,132 @@
     const CSRF_TOKEN   = "{{ csrf_token }}";
     const RESUMO_CHARS = 160;
 
-    /* ── Linkify: transforma URLs em links clicáveis ── */
+    /* ── Linkify ── */
     function linkify(text) {
-        const escaped = text
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;');
-        return escaped.replace(
-            /(https?:\/\/[^\s<>"']+)/g,
-            '<a href="$1" target="_blank" rel="noopener noreferrer" class="text-primary fw-semibold text-break">$1</a>'
-        );
+        const esc = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        return esc.replace(/(https?:\/\/[^\s<>"']+)/g,
+            '<a href="$1" target="_blank" rel="noopener noreferrer" class="text-primary fw-semibold text-break">$1</a>');
     }
 
-    /* ── Inicializar blocos de descrição ── */
+    /* ── Descrições expansíveis ── */
     document.querySelectorAll('.desc-wrapper').forEach(function (wrapper) {
         const fullText  = wrapper.dataset.full || '';
         const shortEl   = wrapper.querySelector('.desc-short');
         const fullEl    = wrapper.querySelector('.desc-full');
         const toggleBtn = wrapper.querySelector('.desc-toggle');
-
-        /* texto resumido: corta em RESUMO_CHARS sem quebrar no meio de URL */
-        const isLong = fullText.length > RESUMO_CHARS;
-        const shortText = isLong ? fullText.slice(0, RESUMO_CHARS).trimEnd() + '…' : fullText;
-
-        shortEl.innerHTML = linkify(shortText);
+        const isLong    = fullText.length > RESUMO_CHARS;
+        shortEl.innerHTML = linkify(isLong ? fullText.slice(0, RESUMO_CHARS).trimEnd() + '…' : fullText);
         fullEl.innerHTML  = linkify(fullText);
-
-        if (!isLong) {
-            toggleBtn.style.display = 'none';
-            return;
-        }
-
+        if (!isLong) { toggleBtn.style.display = 'none'; return; }
         toggleBtn.addEventListener('click', function () {
             const expanded = !fullEl.classList.contains('d-none');
-            if (expanded) {
-                fullEl.classList.add('d-none');
-                shortEl.classList.remove('d-none');
-                toggleBtn.innerHTML = '<i class="bi bi-chevron-down me-1"></i>Ver mais';
+            fullEl.classList.toggle('d-none', expanded);
+            shortEl.classList.toggle('d-none', !expanded);
+            toggleBtn.innerHTML = expanded
+                ? '<i class="bi bi-chevron-down me-1"></i>Ver mais'
+                : '<i class="bi bi-chevron-up me-1"></i>Ocultar';
+        });
+    });
+
+    /* ── Contadores ── */
+    function atualizarContadores() {
+        const nPend = document.querySelectorAll('#lista-pendentes .tarefa-card').length;
+        const nConc = document.querySelectorAll('#lista-concluidas .tarefa-card').length;
+        const elPend = document.getElementById('contador-pendentes');
+        const elConc = document.getElementById('contador-concluidas');
+        if (elPend) elPend.textContent = nPend;
+        if (elConc) elConc.textContent = nConc;
+
+        /* Mostra/oculta mensagens de lista vazia */
+        const msgPend = document.getElementById('msg-sem-pendentes');
+        const msgConc = document.getElementById('msg-sem-concluidas');
+        if (msgPend) msgPend.style.display = nPend === 0 ? '' : 'none';
+        if (msgConc) msgConc.style.display = nConc === 0 ? '' : 'none';
+    }
+
+    /* ── Mover card entre listas sem reload ── */
+    function moverCard(eventoId, concluida) {
+        const wrapper = document.getElementById('wrapper-' + eventoId);
+        if (!wrapper) { window.location.reload(); return; }
+
+        wrapper.style.transition = 'opacity .25s, transform .25s';
+        wrapper.style.opacity    = '0';
+        wrapper.style.transform  = 'scale(.95)';
+
+        setTimeout(function () {
+            const destino = document.getElementById(concluida ? 'lista-concluidas' : 'lista-pendentes');
+            if (!destino) { window.location.reload(); return; }
+
+            const card   = document.getElementById('card-' + eventoId);
+            const btn    = document.getElementById('btn-' + eventoId);
+            const titulo = document.getElementById('titulo-' + eventoId);
+
+            if (concluida) {
+                card.classList.add('concluida-card');
+                card.className = card.className.replace(/tipo-\S+/g, '').replace(/urgencia-\S+/g, '').trim();
+                if (titulo) { titulo.classList.add('titulo-concluido'); titulo.classList.remove('fw-bold'); }
+                const badge = card.querySelector('.badge-tipo');
+                if (badge) badge.className = 'badge-tipo badge-outro';
+                const desc = card.querySelector('.desc-wrapper');
+                if (desc) desc.remove();
+                btn.className = 'btn btn-sm w-100 btn-outline-secondary btn-marcar';
+                btn.innerHTML = '<i class="bi bi-arrow-counterclockwise me-1"></i>Desmarcar';
             } else {
-                shortEl.classList.add('d-none');
-                fullEl.classList.remove('d-none');
-                toggleBtn.innerHTML = '<i class="bi bi-chevron-up me-1"></i>Ocultar';
+                card.classList.remove('concluida-card');
+                if (titulo) { titulo.classList.remove('titulo-concluido'); titulo.classList.add('fw-bold'); }
+                btn.className = 'btn btn-sm w-100 btn-outline-success btn-marcar';
+                btn.innerHTML = '<i class="bi bi-check2-circle me-1"></i>Marcar como concluída';
             }
-        });
-    });
 
-    /* ── Marcar / Desmarcar tarefa ── */
-    document.querySelectorAll(".btn-marcar").forEach(function (btn) {
-        btn.addEventListener("click", function () {
-            const eventoId = btn.dataset.eventoId;
-            const alunoId  = btn.dataset.alunoId;
+            destino.appendChild(wrapper);
+            atualizarContadores();
+            btn.disabled = false;
+            bindBtn(btn);
 
-            btn.disabled = true;
-            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Salvando...';
-
-            fetch(CONCLUIR_URL, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRFToken": CSRF_TOKEN,
-                },
-                body: JSON.stringify({ evento_id: eventoId, aluno_id: alunoId }),
-            })
-            .then(function (res) { return res.json(); })
-            .then(function (data) {
-                if (data.status !== "ok") {
-                    alert("Erro ao salvar. Tente novamente.");
-                    btn.disabled = false;
-                    return;
-                }
-                window.location.reload();
-            })
-            .catch(function (err) {
-                console.error(err);
-                alert("Erro de conexão. Tente novamente.");
-                btn.disabled = false;
+            requestAnimationFrame(function () {
+                wrapper.style.opacity   = '1';
+                wrapper.style.transform = 'scale(1)';
             });
+        }, 260);
+    }
+
+    /* ── Handler do botão ── */
+    function handleMarcar() {
+        const btn      = this;
+        const eventoId = btn.dataset.eventoId;
+        const alunoId  = btn.dataset.alunoId;
+
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Salvando...';
+
+        fetch(CONCLUIR_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': CSRF_TOKEN },
+            body: JSON.stringify({ evento_id: eventoId, aluno_id: alunoId }),
+        })
+        .then(function (res) { return res.json(); })
+        .then(function (data) {
+            if (data.status !== 'ok') {
+                alert('Erro ao salvar. Tente novamente.');
+                btn.disabled = false;
+                return;
+            }
+            moverCard(eventoId, data.concluida);
+        })
+        .catch(function (err) {
+            console.error(err);
+            alert('Erro de conexão. Tente novamente.');
+            btn.disabled = false;
         });
-    });
+    }
+
+    function bindBtn(btn) {
+        btn.removeEventListener('click', handleMarcar);
+        btn.addEventListener('click', handleMarcar);
+    }
+
+    document.querySelectorAll('.btn-marcar').forEach(bindBtn);
+    atualizarContadores();
 })();
 </script>
 {% endblock %}

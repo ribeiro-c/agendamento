@@ -3,7 +3,6 @@ import traceback
 
 from agenda.agenda_robot import extrair_eventos
 from agenda.services.salvar_eventos_service import salvar_eventos
-# from agenda.services.envio_service import enviar_tarefas  # ⏸ WhatsApp desativado temporariamente
 from agenda.models import ConexaoAgenda
 
 logger = logging.getLogger(__name__)
@@ -43,10 +42,16 @@ def sincronizar_agenda():
             )
             traceback.print_exc()
 
-    # ⏸ Envio WhatsApp desativado temporariamente
-    # if conexoes.exists():
-    #     logger.info(" Enviando mensagens WhatsApp")
-    #     enviar_tarefas()
+    # ── WhatsApp ──────────────────────────────────────────────────────────────
+    # Para ativar o envio automático de novas tarefas via WhatsApp:
+    #   1. Configure evolution/.env com AUTHENTICATION_API_KEY e a URL da API
+    #   2. Crie e conecte a instância "agenda" na Evolution API
+    #   3. Preencha o campo "telefone" nos cadastros de Aluno (ex: 5511999999999)
+    #   4. Descomente as três linhas abaixo:
+    #
+    # from agenda.services.envio_service import enviar_tarefas
+    # logger.info(" Enviando mensagens WhatsApp")
+    # enviar_tarefas()
 
 
 def sincronizar_agenda_com_resultado():

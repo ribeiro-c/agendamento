@@ -27,7 +27,7 @@ def _eventos_novos_por_turma():
     for evento in eventos_pendentes:
 
         if evento.turma is None:
-            logger.warning(f"⚠ Evento '{evento.titulo}' sem turma. Ignorando.")
+            logger.warning(f"Evento '{evento.titulo}' sem turma. Ignorando.")
             continue
 
         ja_enviado = WhatsAppEnvio.objects.filter(
@@ -56,68 +56,70 @@ def _registrar_envios(turma, eventos):
         evento.enviado_whatsapp = True
         evento.save(update_fields=["enviado_whatsapp"])
 
-    logger.info(
-        f"📝 {len(eventos)} envio(s) registrado(s) — turma: {turma}"
-    )
+    logger.info(f"{len(eventos)} envio(s) registrado(s) — turma: {turma}")
 
 
 def enviar_tarefas():
+    """
+    Envia via WhatsApp (Evolution API) os eventos novos de cada turma
+    para os alunos que possuem telefone cadastrado.
 
-    logger.info("📲 Iniciando envio WhatsApp")
+    Pré-requisitos para ativar:
+      1. Evolution API rodando e acessível em evolution/.env (AUTHENTICATION_API_KEY)
+      2. Instância "agenda" criada e conectada ao WhatsApp
+      3. Campo `telefone` preenchido nos cadastros de Aluno (formato: 5511999999999)
+      4. Descomentar a chamada em sync_agenda.py
+    """
+    logger.info("Iniciando envio WhatsApp")
 
     agrupados = _eventos_novos_por_turma()
 
     if not agrupados:
-        logger.info("📭 Nenhum evento novo para enviar")
+        logger.info("Nenhum evento novo para enviar")
         return
 
-    logger.info(f"🏫 Turmas com eventos novos: {len(agrupados)}")
+    logger.info(f"Turmas com eventos novos: {len(agrupados)}")
 
     for turma, eventos in agrupados.items():
 
-        logger.info(
-            f"📤 Turma '{turma}' — {len(eventos)} evento(s) a enviar"
-        )
+        logger.info(f"Turma '{turma}' — {len(eventos)} evento(s) a enviar")
 
         alunos = Aluno.objects.filter(turma=turma)
 
         if not alunos.exists():
-            logger.warning(f"⚠ Nenhum aluno na turma '{turma}'. Registrando e seguindo.")
+            logger.warning(f"Nenhum aluno na turma '{turma}'. Registrando e seguindo.")
             _registrar_envios(turma, eventos)
             continue
 
-        # Monta UMA mensagem com todos os eventos da turma
         mensagem = montar_mensagem(eventos)
-
-        logger.info(f"💬 Mensagem montada com {len(eventos)} evento(s)")
+        logger.info(f"Mensagem montada com {len(eventos)} evento(s)")
 
         for aluno in alunos:
 
             numero = aluno.telefone
 
             if not numero:
-                logger.warning(f"⚠ Aluno '{aluno.nome_aluno}' sem telefone. Pulando.")
+                logger.warning(f"Aluno '{aluno.nome_aluno}' sem telefone cadastrado. Pulando.")
                 continue
 
             try:
-
                 response = enviar_texto(numero, mensagem)
 
                 if response.status_code in [200, 201]:
-                    logger.info(f"✅ Mensagem enviada para {aluno.nome_aluno} ({numero})")
+                    logger.info(f"Mensagem enviada para {aluno.nome_aluno} ({numero})")
                 else:
                     logger.warning(
-                        f"⚠ API retornou {response.status_code} para {numero}. "
+                        f"API retornou {response.status_code} para {numero}. "
                         f"Resposta: {response.text[:200]}"
                     )
 
                 time.sleep(4)
 
-            except Exception as e:
-                logger.error(f"❌ Erro ao enviar para {numero}: {e}")
+            except Exception:
+                logger.error(f"Erro ao enviar para {numero}")
                 traceback.print_exc()
 
         # Registra sempre após a tentativa — evita reenvio infinito
         _registrar_envios(turma, eventos)
 
-    logger.info("✅ Envio finalizado")
+    logger.info("Envio finalizado")
