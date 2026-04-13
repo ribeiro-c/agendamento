@@ -29,3 +29,5 @@ if __name__ == "__main__":
     sincronizar_agenda()
 
     logger.info("✅ Processo finalizado")
+
+

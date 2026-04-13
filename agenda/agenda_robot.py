@@ -7,338 +7,311 @@ import time
 import random
 import traceback
 
+# -------------------------------
+# CONFIG
+# -------------------------------
+
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 COOKIES_PATH = "agenda/storage/cookies.json"
+DEBUG_DIR = "debug"
 
+os.makedirs(DEBUG_DIR, exist_ok=True)
 
 # -------------------------------
-# FECHAR MODAL TUTORIAL
+# UTIL
 # -------------------------------
 
-def fechar_tutorial(page):
-    """
-    Fecha o modal de tutorial do Bernoulli, caso esteja visível.
-    O botão de fechar tem o atributo tooltip="Desabilitar tutorial".
-    """
-    try:
-        modal = page.locator(".TutorialInitial")
-        modal.wait_for(state="visible", timeout=4000)
+def screenshot(page, nome):
+    path = os.path.join(DEBUG_DIR, f"{nome}.png")
+    page.screenshot(path=path, full_page=True)
+    logger.info(f"Screenshot: {path}")
 
-        btn_fechar = page.locator('[tooltip="Desabilitar tutorial"] button')
-        btn_fechar.click()
+def delay():
+    time.sleep(random.uniform(1.0, 2.0))
 
-        modal.wait_for(state="hidden", timeout=4000)
-        logger.info("Modal de tutorial fechado")
-
-    except PlaywrightTimeoutError:
-        # Modal not present — nothing to close.
-        pass
-
+def executar_com_retry(fn, tentativas=3):
+    for i in range(tentativas):
+        try:
+            return fn()
+        except Exception as e:
+            logger.warning(f"Tentativa {i+1} falhou: {e}")
+            time.sleep(2)
+    raise Exception("Falha após retries")
 
 # -------------------------------
 # COOKIES
 # -------------------------------
 
 def carregar_cookies(context):
-    """
-    Carrega cookies salvos para evitar login manual.
-    Retorna True se conseguiu carregar, False caso contrário.
-    """
     if not os.path.exists(COOKIES_PATH):
         return False
-
     try:
         with open(COOKIES_PATH, "r") as f:
-            conteudo = f.read().strip()
-
-        if not conteudo:
-            logger.warning("Arquivo de cookies vazio. Ignorando.")  # ALTERADO: removido ⚠️
-            os.remove(COOKIES_PATH)
-            return False
-
-        cookies = json.loads(conteudo)
-
-        if not isinstance(cookies, list) or len(cookies) == 0:
-            logger.warning("Cookies inválidos. Ignorando.")  # ALTERADO: removido ⚠️
-            os.remove(COOKIES_PATH)
-            return False
-
+            cookies = json.load(f)
         context.add_cookies(cookies)
-        logger.info("Cookies carregados com sucesso")  # ALTERADO: removido 🍪
         return True
-
-    except (json.JSONDecodeError, Exception) as e:
-        logger.warning(f"Erro ao carregar cookies: {e}. Recriando.")  # ALTERADO: removido ⚠️
-        if os.path.exists(COOKIES_PATH):
-            os.remove(COOKIES_PATH)
+    except:
         return False
 
-
 def salvar_cookies(context):
-    """
-    Salva cookies após login bem-sucedido para uso futuro.
-    """
     os.makedirs(os.path.dirname(COOKIES_PATH), exist_ok=True)
-
-    cookies = context.cookies()
-
     with open(COOKIES_PATH, "w") as f:
-        json.dump(cookies, f)
-
-    logger.info("Cookies salvos")  # ALTERADO: removido 💾
-
+        json.dump(context.cookies(), f)
 
 # -------------------------------
-# DELAY HUMANO (anti-bloqueio)
+# FECHAR TUTORIAL (VERSÃO GOD)
 # -------------------------------
 
-def delay():
-    """Pausa aleatória para simular comportamento humano e evitar bloqueios."""
-    time.sleep(random.uniform(1.2, 2.6))
+def fechar_tutorial(page):
+    for i in range(3):
+        try:
+            logger.info("Tentando fechar tutorial...")
 
+            modal = page.locator(".TutorialInitial")
 
-# -------------------------------
-# EXTRAIR EVENTOS DO MODAL
-# -------------------------------
+            if modal.count() > 0:
+                if modal.first.is_visible():
+                    # botão correto
+                    btn = page.locator('[tooltip="Desabilitar tutorial"] button')
 
-def extrair_dados_do_modal(page, data, numero_dia):
-    """
-    Extrai todos os dados de um evento a partir do modal aberto.
-    Retorna um dicionário com as informações do evento.
-    """
-    modal = page.locator(".ModalContent.Event")
-    modal.wait_for(timeout=10000)
+                    if btn.count() > 0:
+                        btn.first.click(force=True)
+                        logger.info("Botão tutorial clicado")
 
-    titulo = modal.locator(".title-24-600").inner_text()
-    tipo = modal.locator(".Tag span").inner_text()
-    datas = modal.locator(".ph-calendar").locator("xpath=..").inner_text()
-    descricao = modal.locator(".event-description").inner_text()
+                    else:
+                        logger.warning("Botão não encontrado → usando ESC")
+                        page.keyboard.press("Escape")
 
-    # Extrair arquivos anexados
-    arquivos = []
-    downloads = modal.locator(".FileDownload")
-    qtd = downloads.count()
+                    time.sleep(1)
 
-    for j in range(qtd):
-        item = downloads.nth(j)
-        nome_arquivo = item.inner_text()
-        link = item.locator("a").get_attribute("href")
-        arquivos.append({"nome": nome_arquivo, "link": link})
+            # tentativa extra via ESC sempre
+            page.keyboard.press("Escape")
 
-    return {
-        "data": data.date(),
-        "dia": numero_dia,
-        "titulo": titulo,
-        "tipo": tipo,
-        "datas": datas,
-        "descricao": descricao,
-        "arquivos": arquivos
-    }
-
+        except Exception as e:
+            logger.warning(f"Erro ao fechar tutorial: {e}")
 
 # -------------------------------
-# ROBO PRINCIPAL
+# LOGIN
 # -------------------------------
 
-def extrair_eventos(login, senha):
-    """
-    Função principal que automatiza a extração de eventos da agenda do Bernoulli.
-    
-    Melhorias implementadas:
-    1. ✅ Removido wait_for_load_state("networkidle") que causava timeout
-    2. ✅ Adicionado tratamento robusto de erros com try/except em cada etapa
-    3. ✅ Extração de dados modularizada em função separada
-    4. ✅ Timeouts configuráveis e aumentados para elementos críticos
-    5. ✅ Logs mais detalhados para facilitar debug
-    6. ✅ Verificação de elementos antes de interagir
-    7. ✅ Graceful degradation (continua mesmo se um evento falhar)
-    """
-    logger.info("Iniciando robo")  # ALTERADO: removido 🤖
+def fazer_login(page, context, login, senha):
+    logger.info("Iniciando login...")
 
-    dados = []
+    page.goto("https://mb4.bernoulli.com.br/login")
+
+    page.wait_for_selector("#re-login", timeout=10000)
+
+    screenshot(page, "01_login")
+
+    page.fill("#re-login", login)
+    page.fill("#input-pass", senha)
+
+    delay()
+
+    page.click("button:has-text('ENTRAR')")
+    # fechar_tutorial(page)
+
+    # AVANÇAR
+    try:
+        page.click("button:has-text('AVANÇAR')", timeout=5000)
+        fechar_tutorial(page)
+        logger.info("Clicou em AVANÇAR")
+    except:
+        logger.info("Sem botão avançar")
+
+    # BOAS VINDAS
+    try:
+        page.wait_for_selector("text=Que bom ter você aqui", timeout=10000)
+        screenshot(page, "02_boas_vindas")
+
+        page.locator("div").filter(has_text="Que bom ter você aqui").nth(1).click()
+        delay()
+        page.get_by_role("button").nth(2).click()
+
+        logger.info("Tela de boas-vindas resolvida")
+    except:
+        logger.info("Sem tela de boas-vindas")
+
+    # fechar_tutorial(page)
+
+    page.goto("https://mb4.bernoulli.com.br/")
 
     try:
-        with sync_playwright() as p:
-            # Configuração do browser com opções anti-detecção
-            browser = p.chromium.launch(
-                headless=True,
-                args=[
-                    '--disable-blink-features=AutomationControlled',
-                    '--disable-dev-shm-usage',
-                    '--no-sandbox',
-                    '--disable-setuid-sandbox'
-                ]
-            )
-            
-            context = browser.new_context(
-                viewport={'width': 1920, 'height': 1080},
-                user_agent='Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-            )
-            
-            page = context.new_page()
-            
-            # Configurar timeout global (aumentado para evitar timeouts prematuros)
-            page.set_default_timeout(45000)  # 45 segundos
+        page.get_by_role("button", name="Minha Área").click(timeout=10000)
+    except:
+        pass
 
-            # ----------------------------
-            # LOGIN COM COOKIES
-            # ----------------------------
-            logado = carregar_cookies(context)
+    salvar_cookies(context)
 
-            if logado:
-                logger.info("Login via cookies")  # ALTERADO: removido ⚡
-                page.goto("https://mb4.bernoulli.com.br/minhaarea", wait_until="domcontentloaded")
-            else:
-                logger.info("Fazendo login com usuario e senha")  # ALTERADO: removido 🔐
-                page.goto("https://mb4.bernoulli.com.br/login", wait_until="domcontentloaded")
+    screenshot(page, "03_pos_login")
 
-                # Preencher credenciais
-                page.get_by_role("textbox", name="Login").fill(login)
-                page.get_by_role("textbox", name="Senha").fill(senha)
+    logger.info("Login concluído")
 
-                delay()
-                page.get_by_role("button", name="ENTRAR").click()
-                page.get_by_role("button", name="AVANCAR").click()
-                
-                # Aguardar navegação pós-login
-                # page.wait_for_url("**/minhaarea**", timeout=30000)
-                page.goto("https://mb4.bernoulli.com.br/minhaarea", wait_until="domcontentloaded")
-                
-                fechar_tutorial(page)
-                salvar_cookies(context)
+def garantir_login(page, context, login, senha):
+    page.goto("https://mb4.bernoulli.com.br/")
 
-            delay()
-            fechar_tutorial(page)
-
-            # ----------------------------
-            # IR PARA AGENDA
-            # ----------------------------
-            logger.info("Navegando para agenda...")  # ALTERADO: removido 📅
-            
-            # Usando wait_until="domcontentloaded" em vez de "networkidle" para evitar timeout
-            page.goto(
-                "https://mb4.bernoulli.com.br/minhaarea/agenda", 
-                wait_until="domcontentloaded"
-            )
-            
-            # Fechar tutorial novamente (pode aparecer em diferentes momentos)
-            fechar_tutorial(page)
-            
-            # Aguardar o calendário carregar (elemento crítico)
-            logger.info("Aguardando carregamento do calendario...")  # ALTERADO: removido ⏳
-            page.wait_for_selector(".calendario-table-days", state="visible", timeout=30000)
-            
-            logger.info("Calendario carregado, iniciando leitura de eventos")  # ALTERADO: removido 📅
-
-            # ----------------------------
-            # EXTRAIR EVENTOS
-            # ----------------------------
-            semanas = page.query_selector_all(".calendario-table-days .semana")
-
-            hoje = datetime.now().date()
-            limite = hoje + timedelta(days=6)
-
-            for semana_idx, semana in enumerate(semanas):
-                logger.debug(f"Processando semana {semana_idx + 1}")
-                
-                dias = semana.query_selector_all(".semana-day")
-
-                for dia in dias:
-                    try:
-                        data_iso = dia.get_attribute("data-date")
-
-                        if not data_iso:
-                            continue
-
-                        data = datetime.fromisoformat(data_iso.replace("Z", ""))
-
-                        # Filtrar apenas datas no intervalo desejado
-                        if not (hoje <= data.date() <= limite):
-                            continue
-
-                        day_el = dia.query_selector(".day")
-
-                        if not day_el:
-                            continue
-
-                        numero_dia = day_el.inner_text()
-
-                        eventos = dia.query_selector_all(".tag-circle")
-
-                        if not eventos:
-                            continue
-
-                        # Clicar no dia que tem eventos
-                        logger.info(f"Dia {numero_dia}/{data.month} tem {len(eventos)} evento(s)")  # ALTERADO: removido 📆
-                        
-                        page.locator("a").filter(has_text=numero_dia).first.click()
-                        
-                        # Aguardar lista de eventos carregar
-                        page.wait_for_selector(".EventItem", state="visible", timeout=15000)
-
-                        lista_eventos = page.locator(".EventItem")
-                        total = lista_eventos.count()
-
-                        for i in range(total):
-                            try:
-                                # Clicar no evento para abrir modal
-                                evento = lista_eventos.nth(i)
-                                evento.click()
-
-                                # Extrair dados do modal
-                                evento_dados = extrair_dados_do_modal(page, data, numero_dia)
-                                dados.append(evento_dados)
-
-                                logger.info(f"Evento capturado: {evento_dados['titulo'][:50]}...")  # ALTERADO: removido 📌
-
-                                # Fechar modal
-                                page.keyboard.press("Escape")
-                                delay()  # Pequena pausa entre eventos
-
-                            except Exception as e:
-                                logger.error(f"Erro ao processar evento {i + 1} do dia {numero_dia}: {e}")  # ALTERADO: removido ❌
-                                # Tentar fechar modal se estiver preso
-                                try:
-                                    page.keyboard.press("Escape")
-                                except:
-                                    pass
-                                continue
-
-                    except Exception as e:
-                        logger.error(f"Erro ao processar dia: {e}")  # ALTERADO: removido ❌
-                        continue
-
-            browser.close()
-            logger.info("Navegador fechado")  # ALTERADO: removido ✅
-
-    except Exception as e:
-        logger.error(f"Erro critico no robo: {e}")  # ALTERADO: removido ❌
-        traceback.print_exc()
-
-    logger.info(f"Total eventos coletados: {len(dados)}")  # ALTERADO: removido 📊
-    return dados
-
+    try:
+        page.get_by_role("button", name="Minha Área").wait_for(timeout=5000)
+        logger.info("Sessão válida")
+    except:
+        logger.info("Sessão inválida → login necessário")
+        fazer_login(page, context, login, senha)
 
 # -------------------------------
-# EXECUÇÃO DIRETA (para teste)
+# AGENDA
+# -------------------------------
+
+def ir_para_agenda(page):
+    logger.info("Indo para agenda...")
+
+    try:
+        page.get_by_role("button", name="Minha Área").click(timeout=10000)
+        delay()
+        page.get_by_role("button", name="Agenda").click(timeout=10000)
+    except:
+        logger.warning("Falha via menu → URL direta")
+        page.goto("https://mb4.bernoulli.com.br/minhaarea/agenda")
+
+    
+
+    screenshot(page, "04_agenda")
+
+    try:
+        page.get_by_role("button", name="Calendário").click(timeout=5000)
+    except:
+        pass
+
+    # fechar_tutorial(page)
+
+    # 🔥 ESPERA INTELIGENTE
+    try:
+        page.wait_for_selector(".semana-day:not(.outMonth)", timeout=20000)
+    except:
+        logger.warning("Reload da agenda")
+        page.reload()
+        # fechar_tutorial(page)
+        page.wait_for_selector(".semana-day:not(.outMonth)", timeout=20000)
+
+    logger.info("Agenda carregada")
+
+# -------------------------------
+# EXTRAÇÃO COM FILTRO (15 DIAS)
+# -------------------------------
+
+def extrair_eventos(page):
+    dados = []
+
+    hoje = datetime.now().date()
+    inicio = hoje - timedelta(days=7)
+    fim = hoje + timedelta(days=7)
+
+    logger.info(f"Intervalo: {inicio} até {fim}")
+
+    dias = page.locator(".semana-day")
+    total = dias.count()
+
+    logger.info(f"{total} dias encontrados")
+
+    for i in range(total):
+        try:
+            dia = dias.nth(i)
+
+            data_iso = dia.get_attribute("data-date")
+            if not data_iso:
+                continue
+
+            data = datetime.fromisoformat(data_iso.replace("Z", "")).date()
+
+            # 🔥 FILTRO REAL
+            if not (inicio <= data <= fim):
+                continue
+
+            eventos = dia.locator(".tag-circle")
+
+            if eventos.count() == 0:
+                continue
+
+            logger.info(f"Dia com evento: {data}")
+
+            dia.click()
+
+            page.wait_for_selector(".EventItem", timeout=10000)
+
+            itens = page.locator(".EventItem")
+
+            for j in range(itens.count()):
+                try:
+                    evento = itens.nth(j)
+                    evento.click()
+
+                    modal = page.locator(".ModalContent.Event")
+                    modal.wait_for()
+
+                    titulo = modal.locator(".title-24-600").inner_text()
+
+                    dados.append({
+                        "data": data,
+                        "titulo": titulo
+                    })
+
+                    logger.info(f"Evento: {titulo}")
+
+                    page.keyboard.press("Escape")
+                    delay()
+
+                except Exception as e:
+                    logger.warning(f"Erro evento: {e}")
+
+        except Exception as e:
+            logger.warning(f"Erro dia: {e}")
+
+    return dados
+
+# -------------------------------
+# MAIN
+# -------------------------------
+
+def executar(login, senha):
+    try:
+        with sync_playwright() as p:
+
+            browser = p.chromium.launch(headless=False)
+
+            context = browser.new_context()
+
+            carregar_cookies(context)
+
+            page = context.new_page()
+
+            executar_com_retry(lambda: garantir_login(page, context, login, senha))
+            executar_com_retry(lambda: ir_para_agenda(page))
+
+            dados = extrair_eventos(page)
+
+            logger.info(f"Total eventos: {len(dados)}")
+
+            browser.close()
+
+            return dados
+
+    except Exception as e:
+        logger.error(f"Erro geral: {e}")
+        traceback.print_exc()
+        return []
+
+# -------------------------------
+# RUN
 # -------------------------------
 
 if __name__ == "__main__":
-    # Configurar logging para exibir no console
-    logging.basicConfig(
-        level=logging.INFO,
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    eventos = executar(
+        "cecilia.amaro@soulasalle.com.br",
+        "#30Ceci3004"
     )
-    
-    # Credenciais (idealmente viriam de variáveis de ambiente)
-    login = "seu_login"
-    senha = "sua_senha"
-    
-    # Executar robô
-    eventos = extrair_eventos(login, senha)
-    
-    # Mostrar resumo
-    print(f"\nResumo final: {len(eventos)} eventos encontrados")  # ALTERADO: removido 📋
-    for i, evento in enumerate(eventos[:5]):  # Mostrar apenas os primeiros 5
-        print(f"  {i+1}. {evento['data']} - {evento['titulo']}")
+
+    print(f"\nEventos: {len(eventos)}")
+
+    for e in eventos[:10]:
+        print(f"{e['data']} - {e['titulo']}")
