@@ -37,11 +37,12 @@ def listar_tarefas(request):
     else:
         aluno = alunos_do_usuario.first()
 
-    # Window: first day of current month → last day of next month
+    # Window: 10 days into the previous month → 10 days into the next month
     hoje = date.today()
-    data_inicio = hoje.replace(day=1)
-    primeiro_proximo = (hoje.replace(day=1) + timedelta(days=32)).replace(day=1)
-    data_fim = (primeiro_proximo + timedelta(days=32)).replace(day=1) - timedelta(days=1)
+    primeiro_mes_atual = hoje.replace(day=1)
+    ultimo_mes_atual = (primeiro_mes_atual + timedelta(days=32)).replace(day=1) - timedelta(days=1)
+    data_inicio = primeiro_mes_atual - timedelta(days=10)
+    data_fim = ultimo_mes_atual + timedelta(days=10)
 
     # inicio is stored as UTC. Convert window boundaries to UTC-aware datetimes
     # so the comparison is done correctly regardless of DST.

@@ -1,11 +1,68 @@
 import os
 import json
 import logging
+import re
 from datetime import datetime
 from zoneinfo import ZoneInfo
+from html.parser import HTMLParser
 from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeoutError
 
 BRASILIA = ZoneInfo("America/Sao_Paulo")
+
+
+class _TextExtractor(HTMLParser):
+    """Converts HTML to plain text, preserving URLs as bare text."""
+
+    def __init__(self):
+        super().__init__()
+        self._parts = []
+        self._skip = False
+
+    def handle_starttag(self, tag, attrs):
+        if tag in ("script", "style"):
+            self._skip = True
+        if tag in ("br", "p", "div", "li"):
+            self._parts.append("\n")
+
+    def handle_endtag(self, tag):
+        if tag in ("script", "style"):
+            self._skip = False
+
+    def handle_data(self, data):
+        if not self._skip:
+            self._parts.append(data)
+
+    def get_text(self):
+        text = "".join(self._parts)
+        # Replace non-breaking spaces with regular spaces
+        text = text.replace("\xa0", " ")
+        # Remove lines that are only whitespace
+        lines = [ln.strip() for ln in text.splitlines()]
+        # Drop consecutive empty lines (keep at most one blank line between paragraphs)
+        result = []
+        prev_blank = False
+        for ln in lines:
+            if ln == "":
+                if not prev_blank:
+                    result.append("")
+                prev_blank = True
+            else:
+                result.append(ln)
+                prev_blank = False
+        return "\n".join(result).strip()
+
+
+def html_para_texto(html):
+    """
+    Strips HTML tags and returns clean plain text.
+    URLs that were inside <a href> tags are preserved as bare text
+    because handle_data already captures the link text or the URL itself.
+    """
+    if not html:
+        return ""
+    parser = _TextExtractor()
+    parser.feed(html)
+    return parser.get_text()
 
 logger = logging.getLogger(__name__)
 
@@ -174,8 +231,8 @@ def extrair_eventos(login, senha):
                     continue
 
                 titulo = colunas[0].inner_text().strip()
-                # inner_html preserves links (Google Drive, YouTube, etc.)
-                descricao = colunas[1].inner_html().strip()
+                # Convert HTML description to plain text; URLs are kept as bare text.
+                descricao = html_para_texto(colunas[1].inner_html())
                 inicio_raw = colunas[2].inner_text().strip()
                 termino_raw = colunas[3].inner_text().strip()
                 tipo = colunas[4].locator("span").first.inner_text().strip()
