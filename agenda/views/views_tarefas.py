@@ -1,17 +1,19 @@
 import json
 import logging
 from datetime import date, timedelta
+from zoneinfo import ZoneInfo
 
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
-from django.utils import timezone
 from django.db.models import Q
 
 from ..models import Aluno, AgendaEvento, TarefaCompleta
 
 logger = logging.getLogger(__name__)
+
+BRASILIA = ZoneInfo("America/Sao_Paulo")
 
 
 @login_required
@@ -19,8 +21,8 @@ def listar_tarefas(request):
     """
     Shows tasks for the logged-in user's students.
 
-    Window: yesterday through end of next month, covering both legacy
-    records (filtered by `data`) and new records (filtered by `inicio`).
+    Window: first day of current month → end of next month.
+    Filters on the local Brasília date to avoid UTC boundary issues.
     """
     alunos_do_usuario = Aluno.objects.filter(
         usuarios=request.user
@@ -35,19 +37,27 @@ def listar_tarefas(request):
     else:
         aluno = alunos_do_usuario.first()
 
-    # Window: yesterday → end of next month
+    # Window: first day of current month → last day of next month
     hoje = date.today()
-    data_inicio = hoje - timedelta(days=1)
+    data_inicio = hoje.replace(day=1)
     primeiro_proximo = (hoje.replace(day=1) + timedelta(days=32)).replace(day=1)
     data_fim = (primeiro_proximo + timedelta(days=32)).replace(day=1) - timedelta(days=1)
 
+    # inicio is stored as UTC. Convert window boundaries to UTC-aware datetimes
+    # so the comparison is done correctly regardless of DST.
+    from datetime import datetime
+    inicio_utc = datetime(data_inicio.year, data_inicio.month, data_inicio.day,
+                          tzinfo=BRASILIA)
+    fim_utc = datetime(data_fim.year, data_fim.month, data_fim.day,
+                       23, 59, 59, tzinfo=BRASILIA)
+
     # Include events that match the window via either field.
-    # Records from the new robot have inicio set; legacy records use data.
+    # New records have inicio set; legacy records use data.
     eventos = (
         AgendaEvento.objects
         .filter(turma=aluno.turma)
         .filter(
-            Q(inicio__date__gte=data_inicio, inicio__date__lte=data_fim) |
+            Q(inicio__gte=inicio_utc, inicio__lte=fim_utc) |
             Q(inicio__isnull=True, data__gte=data_inicio, data__lte=data_fim)
         )
         .select_related("turma")
