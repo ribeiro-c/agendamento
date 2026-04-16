@@ -122,3 +122,53 @@ Consultando API: 2026-04-01 até 2026-05-31
  Eventos encontrados: 0
  Eventos salvos: 0 | Ignorados (já existentes): 0
 ✅ Processo finalizado
+🚀 Iniciando robô
+ Iniciando sincronização da agenda
+ Buscando conexões: 1 encontradas
+ Processando turma: 181M
+Using selector: EpollSelector
+Cookies carregados
+Acessando agenda...
+Modal de boas-vindas fechado
+Alternando para visão Lista...
+Timeout: Locator.click: Timeout 30000ms exceeded.
+Call log:
+  - waiting for get_by_role("button", name="Lista")
+
+ Eventos encontrados: 0
+ Eventos salvos: 0 | Ignorados (já existentes): 0
+✅ Processo finalizado
+🚀 Iniciando robô
+ Iniciando sincronização da agenda
+ Buscando conexões: 1 encontradas
+ Processando turma: 181M
+Using selector: EpollSelector
+Cookies carregados
+Acessando agenda...
+Modal de boas-vindas fechado
+Alternando para visão Minha Área...
+Alternando para visão Agenda...
+Alternando para visão Lista...
+25 linhas encontradas na tabela
+25 eventos extraídos
+ Eventos encontrados: 25
+ ERRO ao processar turma 181M — continuando com as demais
+✅ Processo finalizado
+🚀 Iniciando robô
+ Iniciando sincronização da agenda
+ Buscando conexões: 1 encontradas
+ Processando turma: 181M
+Using selector: EpollSelector
+Cookies carregados
+Acessando agenda...
+Modal de boas-vindas fechado
+Alternando para visão Minha Área...
+Alternando para visão Agenda...
+Alternando para visão Lista...
+25 linhas encontradas na tabela
+25 eventos extraídos
+ Eventos encontrados: 25
+ Eventos salvos: 25 | Ignorados (já existentes): 0
+✅ Processo finalizado
+Watching for file changes with StatReloader
+Not Found: /favicon.ico

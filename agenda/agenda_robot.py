@@ -213,6 +213,10 @@ def extrair_eventos(login, senha):
             # ------------------------------------------------------------------
             # Switch to Lista view and wait for the table
             # ------------------------------------------------------------------
+            logger.info("Alternando para visão Minha Área...")
+            page.get_by_role("button", name="Minha Área").click()
+            logger.info("Alternando para visão Agenda...")
+            page.get_by_role("button", name="Agenda").click()
             logger.info("Alternando para visão Lista...")
             page.get_by_role("button", name="Lista").click()
             page.wait_for_selector("table tbody tr", timeout=15000)
