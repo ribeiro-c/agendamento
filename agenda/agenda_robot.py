@@ -2,7 +2,10 @@ import os
 import json
 import logging
 from datetime import datetime
+from zoneinfo import ZoneInfo
 from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeoutError
+
+BRASILIA = ZoneInfo("America/Sao_Paulo")
 
 logger = logging.getLogger(__name__)
 
@@ -21,11 +24,11 @@ USER_AGENT = (
 
 def formatar_data_bernoulli(data_str):
     """
-    Converts Bernoulli date strings to datetime objects.
+    Converts Bernoulli date strings to timezone-aware datetime objects.
 
     Handles two formats produced by the Lista view:
-      - 'ter., 10/03/26, 10:50'  → datetime(2026, 3, 10, 10, 50)
-      - '10/03/26, 10:50'        → datetime(2026, 3, 10, 10, 50)
+      - 'ter., 10/03/26, 10:50'  → datetime(2026, 3, 10, 10, 50, tzinfo=America/Sao_Paulo)
+      - '10/03/26, 10:50'        → datetime(2026, 3, 10, 10, 50, tzinfo=America/Sao_Paulo)
 
     Returns None on parse failure so callers can decide how to handle it.
     """
@@ -37,7 +40,9 @@ def formatar_data_bernoulli(data_str):
         if len(partes) == 3:
             partes = partes[1:]
         data_limpa = f"{partes[0].strip()} {partes[1].strip()}"
-        return datetime.strptime(data_limpa, "%d/%m/%y %H:%M")
+        naive = datetime.strptime(data_limpa, "%d/%m/%y %H:%M")
+        # Bernoulli displays times in Brasília time (BRT/BRST).
+        return naive.replace(tzinfo=BRASILIA)
     except Exception as e:
         logger.warning(f"Não foi possível converter data '{data_str}': {e}")
         return None
