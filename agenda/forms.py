@@ -248,33 +248,48 @@ class AgendaEventoForm(forms.ModelForm):
 
     class Meta:
         model = AgendaEvento
-        fields = ["turma", "data", "dia", "titulo", "tipo", "datas", "descricao"]
+        fields = [
+            "turma", "titulo", "descricao", "tipo",
+            "inicio", "termino", "tem_anexo",
+            "enviado_whatsapp",
+        ]
         widgets = {
             "turma": forms.Select(
                 attrs={"class": "form-select shadow-sm border-dark", "style": "border-radius:10px;"}
             ),
-            "data": forms.DateInput(
-                attrs={"class": "form-control shadow-sm border-dark", "type": "date", "style": "border-radius:10px;"}
-            ),
-            "dia": forms.TextInput(
-                attrs={"class": "form-control shadow-sm border-dark", "placeholder": "Ex: Seg", "style": "border-radius:10px;"}
-            ),
             "titulo": forms.TextInput(
                 attrs={"class": "form-control shadow-sm border-dark", "placeholder": "Título do evento", "style": "border-radius:10px;"}
-            ),
-            "tipo": forms.TextInput(
-                attrs={"class": "form-control shadow-sm border-dark", "placeholder": "Ex: Atividade, Prova, Lição", "style": "border-radius:10px;"}
-            ),
-            "datas": forms.TextInput(
-                attrs={"class": "form-control shadow-sm border-dark", "placeholder": "Datas relacionadas", "style": "border-radius:10px;"}
             ),
             "descricao": forms.Textarea(
                 attrs={"class": "form-control shadow-sm border-dark", "rows": 4, "placeholder": "Descrição completa", "style": "border-radius:10px;"}
             ),
+            "tipo": forms.TextInput(
+                attrs={"class": "form-control shadow-sm border-dark", "placeholder": "Ex: Tarefa, Prova, Avaliação", "style": "border-radius:10px;"}
+            ),
+            "inicio": forms.DateTimeInput(
+                attrs={"class": "form-control shadow-sm border-dark", "type": "datetime-local", "style": "border-radius:10px;"},
+                format="%Y-%m-%dT%H:%M",
+            ),
+            "termino": forms.DateTimeInput(
+                attrs={"class": "form-control shadow-sm border-dark", "type": "datetime-local", "style": "border-radius:10px;"},
+                format="%Y-%m-%dT%H:%M",
+            ),
+            "tem_anexo": forms.CheckboxInput(
+                attrs={"class": "form-check-input", "style": "transform: scale(1.3);"}
+            ),
+            "enviado_whatsapp": forms.CheckboxInput(
+                attrs={"class": "form-check-input", "style": "transform: scale(1.3);"}
+            ),
         }
         labels = {
-            "turma": "Turma", "data": "Data", "dia": "Dia",
-            "titulo": "Título", "tipo": "Tipo", "datas": "Datas", "descricao": "Descrição"
+            "turma": "Turma",
+            "titulo": "Título",
+            "descricao": "Descrição",
+            "tipo": "Tipo",
+            "inicio": "Início",
+            "termino": "Término",
+            "tem_anexo": "Possui anexo",
+            "enviado_whatsapp": "Enviado via WhatsApp",
         }
 
 

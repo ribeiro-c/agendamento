@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.utils.formats import get_format
 from ..models import AgendaEvento
 from ..forms import AgendaEventoForm
 from django.contrib import messages
@@ -6,7 +7,10 @@ from django.contrib.auth.decorators import login_required
 
 @login_required
 def agenda_list(request):
-    agendas = AgendaEvento.objects.select_related('turma').order_by('-data')
+    # Order by inicio when available, fall back to legacy data field.
+    agendas = AgendaEvento.objects.select_related('turma').order_by(
+        '-inicio', '-data'
+    )
     return render(request, 'agenda/list.html', {'agendas': agendas})
 
 @login_required
