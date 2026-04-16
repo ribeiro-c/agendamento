@@ -223,12 +223,20 @@ body.dark-mode .titulo-concluido     { color: #9ca3af; }
                         </span>
                     </div>
                     <h6 class="titulo-concluido mb-2" style="font-size:.92rem;" id="titulo-{{ evento.id }}">{{ evento.titulo }}</h6>
-                    <button class="btn btn-sm w-100 btn-outline-secondary btn-marcar"
-                            data-evento-id="{{ evento.id }}"
-                            data-aluno-id="{{ aluno.id }}"
-                            id="btn-{{ evento.id }}">
-                        <i class="bi bi-arrow-counterclockwise me-1"></i>Desmarcar
-                    </button>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-sm flex-grow-1 btn-outline-secondary btn-marcar"
+                                data-evento-id="{{ evento.id }}"
+                                data-aluno-id="{{ aluno.id }}"
+                                id="btn-{{ evento.id }}">
+                            <i class="bi bi-arrow-counterclockwise me-1"></i>Desmarcar
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger btn-ocultar"
+                                data-evento-id="{{ evento.id }}"
+                                data-aluno-id="{{ aluno.id }}"
+                                title="Ocultar esta tarefa da sua lista">
+                            <i class="bi bi-eye-slash"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -372,6 +380,52 @@ body.dark-mode .titulo-concluido     { color: #9ca3af; }
     }
 
     document.querySelectorAll('.btn-marcar').forEach(bindBtn);
+
+    /* ── Ocultar tarefa concluída ── */
+    const OCULTAR_URL = "{% url 'cal:ocultar_tarefa' %}";
+
+    function handleOcultar() {
+        const btn      = this;
+        const eventoId = btn.dataset.eventoId;
+        const alunoId  = btn.dataset.alunoId;
+
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+
+        fetch(OCULTAR_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': CSRF_TOKEN },
+            body: JSON.stringify({ evento_id: eventoId, aluno_id: alunoId }),
+        })
+        .then(function (res) { return res.json(); })
+        .then(function (data) {
+            if (data.status !== 'ok') {
+                alert('Erro ao ocultar. Tente novamente.');
+                btn.disabled = false;
+                return;
+            }
+            const wrapper = document.getElementById('wrapper-' + eventoId);
+            if (wrapper) {
+                wrapper.style.transition = 'opacity .25s, transform .25s';
+                wrapper.style.opacity    = '0';
+                wrapper.style.transform  = 'scale(.95)';
+                setTimeout(function () {
+                    wrapper.remove();
+                    atualizarContadores();
+                }, 260);
+            }
+        })
+        .catch(function (err) {
+            console.error(err);
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bi bi-eye-slash"></i>';
+        });
+    }
+
+    document.querySelectorAll('.btn-ocultar').forEach(function (btn) {
+        btn.addEventListener('click', handleOcultar);
+    });
+
     atualizarContadores();
 })();
 </script>

@@ -68,6 +68,7 @@ urlpatterns = [
     # ─── Tarefas ───────────────────────────────────────────────────────────────
     path('tarefas/', views_tarefas.listar_tarefas, name='listar_tarefas'),
     path('tarefa/concluir/', views_tarefas.marcar_concluida, name='marcar_concluida'),
+    path('tarefa/ocultar/', views_tarefas.ocultar_tarefa, name='ocultar_tarefa'),
     path('tarefas/pdf/', views_pdf.gerar_pdf_tarefas, name='tarefas_pdf'),
 
     # ─── Robô ──────────────────────────────────────────────────────────────────

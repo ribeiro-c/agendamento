@@ -148,6 +148,10 @@ class TarefaCompleta(models.Model):
 
     concluida = models.BooleanField(default=False)
 
+    # Per-student visibility flag. False hides the task from the student's
+    # list without affecting other students linked to the same event.
+    visivel = models.BooleanField(default=True)
+
     atualizado_em = models.DateTimeField(auto_now=True)
 
     class Meta:

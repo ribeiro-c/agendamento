@@ -37,12 +37,13 @@ def listar_tarefas(request):
     else:
         aluno = alunos_do_usuario.first()
 
-    # Window: 10 days into the previous month → 10 days into the next month
+    # Window: full previous month + full current month + 10 days of next month
     hoje = date.today()
     primeiro_mes_atual = hoje.replace(day=1)
+    primeiro_mes_anterior = (primeiro_mes_atual - timedelta(days=1)).replace(day=1)
     ultimo_mes_atual = (primeiro_mes_atual + timedelta(days=32)).replace(day=1) - timedelta(days=1)
-    data_inicio = primeiro_mes_atual - timedelta(days=10)
-    data_fim = ultimo_mes_atual + timedelta(days=10)
+    data_inicio = primeiro_mes_anterior          # 1st of previous month
+    data_fim = ultimo_mes_atual + timedelta(days=10)  # 10 days into next month
 
     # inicio is stored as UTC. Convert window boundaries to UTC-aware datetimes
     # so the comparison is done correctly regardless of DST.
@@ -65,17 +66,21 @@ def listar_tarefas(request):
         .order_by("inicio", "data")
     )
 
-    concluidos_ids = set(
-        TarefaCompleta.objects
-        .filter(aluno=aluno, concluida=True)
-        .values_list("evento_id", flat=True)
-    )
+    # Only load TarefaCompleta records that are still visible to this student.
+    tarefas_do_aluno = {
+        t.evento_id: t
+        for t in TarefaCompleta.objects.filter(aluno=aluno, visivel=True)
+    }
 
     pendentes = []
     concluidas = []
     for evento in eventos:
-        item = {"evento": evento, "concluida": evento.id in concluidos_ids}
-        if evento.id in concluidos_ids:
+        tarefa = tarefas_do_aluno.get(evento.id)
+        # Skip events the student explicitly hid (visivel=False records are
+        # excluded from tarefas_do_aluno, so they simply won't appear here).
+        concluida = tarefa.concluida if tarefa else False
+        item = {"evento": evento, "concluida": concluida}
+        if concluida:
             concluidas.append(item)
         else:
             pendentes.append(item)
@@ -126,3 +131,39 @@ def marcar_concluida(request):
     )
 
     return JsonResponse({"status": "ok", "concluida": tarefa.concluida})
+
+
+@require_POST
+@login_required
+def ocultar_tarefa(request):
+    """
+    AJAX endpoint to hide a completed task from the student's list.
+
+    Sets visivel=False on the student's TarefaCompleta record. The event
+    itself and other students' records are not affected.
+
+    Payload JSON: { "evento_id": int, "aluno_id": int }
+    Response JSON: { "status": "ok" }
+    """
+    try:
+        data = json.loads(request.body)
+        evento_id = int(data.get("evento_id"))
+        aluno_id = int(data.get("aluno_id"))
+    except (TypeError, ValueError, json.JSONDecodeError) as e:
+        logger.warning(f"Payload inválido em ocultar_tarefa: {e}")
+        return JsonResponse({"status": "erro", "mensagem": "Dados inválidos."}, status=400)
+
+    aluno = get_object_or_404(Aluno, pk=aluno_id, usuarios=request.user)
+    evento = get_object_or_404(AgendaEvento, pk=evento_id)
+
+    tarefa, _ = TarefaCompleta.objects.get_or_create(
+        aluno=aluno,
+        evento=evento,
+        defaults={"concluida": True, "visivel": False},
+    )
+    tarefa.visivel = False
+    tarefa.save()
+
+    logger.info(f"🙈 Aluno {aluno} ocultou — {evento.titulo}")
+
+    return JsonResponse({"status": "ok"})
