@@ -4,8 +4,8 @@ from agenda.utils.hash_evento import gerar_hash
 
 def salvar_eventos(eventos, turma=None):
 
-    objetos = []
     ignorados = 0
+    objetos = []
 
     hashes_existentes = set(
         AgendaEvento.objects.values_list("hash", flat=True)
@@ -22,12 +22,16 @@ def salvar_eventos(eventos, turma=None):
         objetos.append(
             AgendaEvento(
                 turma=turma,
-                data=evento["data"],
-                dia=evento["dia"],
                 titulo=evento["titulo"],
-                tipo=evento["tipo"],
-                datas=evento["datas"],
-                descricao=evento["descricao"],
+                descricao=evento.get("descricao", ""),
+                tipo=evento.get("tipo", ""),
+                inicio=evento.get("inicio"),
+                termino=evento.get("termino"),
+                tem_anexo=evento.get("tem_anexo", False),
+                # Legacy fields — populated when available for backward compat
+                data=evento.get("data"),
+                dia=evento.get("dia", ""),
+                datas=evento.get("datas", ""),
                 hash=hash_evento,
             )
         )
@@ -36,5 +40,5 @@ def salvar_eventos(eventos, turma=None):
 
     return {
         "salvos": len(objetos),
-        "ignorados": ignorados
+        "ignorados": ignorados,
     }

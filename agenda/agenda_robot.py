@@ -1,27 +1,46 @@
 import os
 import json
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime
 from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeoutError
 
 logger = logging.getLogger(__name__)
 
 COOKIES_PATH = "agenda/storage/cookies.json"
 
-# Mirrors the headers observed in Burp Suite captures.
-API_HEADERS = {
-    "Accept": "application/json",
-    "Plataforma": "2",
-    "Front-Version": "4.25.50",
-    "Origin": "https://mb4.bernoulli.com.br",
-    "Referer": "https://mb4.bernoulli.com.br/",
-}
-
 USER_AGENT = (
     "Mozilla/5.0 (X11; Linux x86_64) "
     "AppleWebKit/537.36 (KHTML, like Gecko) "
     "Chrome/145.0.0.0 Safari/537.36"
 )
+
+
+# ---------------------------------------------------------------------------
+# Date parsing
+# ---------------------------------------------------------------------------
+
+def formatar_data_bernoulli(data_str):
+    """
+    Converts Bernoulli date strings to datetime objects.
+
+    Handles two formats produced by the Lista view:
+      - 'ter., 10/03/26, 10:50'  → datetime(2026, 3, 10, 10, 50)
+      - '10/03/26, 10:50'        → datetime(2026, 3, 10, 10, 50)
+
+    Returns None on parse failure so callers can decide how to handle it.
+    """
+    if not data_str:
+        return None
+    try:
+        partes = [p.strip() for p in data_str.split(',')]
+        # Drop the weekday prefix when present (e.g. 'ter.')
+        if len(partes) == 3:
+            partes = partes[1:]
+        data_limpa = f"{partes[0].strip()} {partes[1].strip()}"
+        return datetime.strptime(data_limpa, "%d/%m/%y %H:%M")
+    except Exception as e:
+        logger.warning(f"Não foi possível converter data '{data_str}': {e}")
+        return None
 
 
 # ---------------------------------------------------------------------------
@@ -36,10 +55,7 @@ def fechar_boasvindas(page):
     try:
         overlay = page.locator("div").filter(has_text="Que bom ter você aqui").nth(1)
         overlay.wait_for(state="visible", timeout=4000)
-
-        # The close/advance button is the third button on the page at that point.
         page.get_by_role("button").nth(2).click()
-
         overlay.wait_for(state="hidden", timeout=4000)
         logger.info("Modal de boas-vindas fechado")
     except PlaywrightTimeoutError:
@@ -57,10 +73,8 @@ def fechar_tutorial(page):
     try:
         modal = page.locator(".TutorialInitial")
         modal.wait_for(state="visible", timeout=4000)
-
         btn_fechar = page.locator('[tooltip="Desabilitar tutorial"] button')
         btn_fechar.click()
-
         modal.wait_for(state="hidden", timeout=4000)
         logger.info("Modal de tutorial fechado")
     except PlaywrightTimeoutError:
@@ -69,84 +83,17 @@ def fechar_tutorial(page):
 
 
 # ---------------------------------------------------------------------------
-# Token extraction
-# ---------------------------------------------------------------------------
-
-def extrair_token(page):
-    """
-    Reads the JWT Bearer token from localStorage after a successful login.
-
-    The Bernoulli SPA stores the token under several possible keys. Returns
-    the token string, or None if not found.
-    """
-    # Dump all localStorage keys and the first 80 chars of each value so we can
-    # identify the correct key name. Remove this block once the key is known.
-    dump = page.evaluate("""
-        () => {
-            const result = {};
-            for (let i = 0; i < localStorage.length; i++) {
-                const k = localStorage.key(i);
-                const v = localStorage.getItem(k) || '';
-                result[k] = v.substring(0, 80);
-            }
-            return result;
-        }
-    """)
-    logger.info(f"[DIAGNÓSTICO] localStorage keys: {list(dump.keys())}")
-    for k, v in dump.items():
-        logger.info(f"  {k}: {v}")
-
-    token = page.evaluate("""
-        () => {
-            // Scan every key — accept any value that is a raw JWT.
-            for (let i = 0; i < localStorage.length; i++) {
-                const k = localStorage.key(i);
-                const val = localStorage.getItem(k) || '';
-                if (val.startsWith('eyJ')) return val;
-                try {
-                    const obj = JSON.parse(val);
-                    for (const field of ['token', 'access_token', 'accessToken', 'bearerToken']) {
-                        if (obj[field] && obj[field].startsWith('eyJ')) return obj[field];
-                    }
-                } catch (_) {}
-            }
-            return null;
-        }
-    """)
-
-    if token:
-        logger.info("Token JWT extraído do localStorage")
-    else:
-        logger.warning("Token JWT não encontrado no localStorage — fetch usará contexto de sessão")
-
-    return token
-
-
-# ---------------------------------------------------------------------------
-# Date window
-# ---------------------------------------------------------------------------
-
-def janela_datas():
-    """
-    Returns (data_inicio, data_fim) covering the current month through the
-    end of the following month.
-    """
-    hoje = datetime.now()
-    inicio = hoje.replace(day=1)
-    primeiro_proximo = (hoje.replace(day=1) + timedelta(days=32)).replace(day=1)
-    ultimo_proximo = (primeiro_proximo + timedelta(days=32)).replace(day=1) - timedelta(days=1)
-    return inicio.strftime("%Y-%m-%d"), ultimo_proximo.strftime("%Y-%m-%d")
-
-
-# ---------------------------------------------------------------------------
 # Main extraction function
 # ---------------------------------------------------------------------------
 
 def extrair_eventos(login, senha):
-
+    """
+    Logs into Bernoulli, switches to the Lista view, and scrapes the event
+    table. Returns a list of dicts ready to be passed to salvar_eventos().
+    """
     with sync_playwright() as p:
 
-        browser = p.chromium.launch(headless=False)
+        browser = p.chromium.launch(headless=True)
         context = browser.new_context(user_agent=USER_AGENT)
 
         if os.path.exists(COOKIES_PATH):
@@ -160,19 +107,17 @@ def extrair_eventos(login, senha):
         page = context.new_page()
 
         try:
-            logger.info("Acessando sistema...")
+            logger.info("Acessando agenda...")
             page.goto(
-                "https://mb4.bernoulli.com.br/minhaarea",
+                "https://mb4.bernoulli.com.br/minhaarea/agenda",
                 wait_until="load",
                 timeout=60000,
             )
 
-            needs_login = (
-                "login" in page.url
-                or page.get_by_role("textbox", name="Login").is_visible(timeout=5000)
-            )
-
-            if needs_login:
+            # ------------------------------------------------------------------
+            # Login when session cookie is expired or absent
+            # ------------------------------------------------------------------
+            if "login" in page.url or page.get_by_role("textbox", name="Login").is_visible(timeout=5000):
                 logger.info("Fazendo login...")
                 page.goto("https://mb4.bernoulli.com.br/login")
                 page.get_by_role("textbox", name="Login").fill(login)
@@ -184,66 +129,81 @@ def extrair_eventos(login, senha):
                 except PlaywrightTimeoutError:
                     pass
 
-                # page.wait_for_url("**/minhaarea**", timeout=20000)
-                print("needs_login")
-                page.get_by_role("button", name="Minha Área").click()
-                page.get_by_role("button", name="Agenda").click()
+                page.wait_for_url("**/minhaarea**", timeout=20000)
 
                 fechar_boasvindas(page)
                 fechar_tutorial(page)
+
+                # Navigate to agenda after login
+                page.goto(
+                    "https://mb4.bernoulli.com.br/minhaarea/agenda",
+                    wait_until="load",
+                    timeout=30000,
+                )
 
                 with open(COOKIES_PATH, "w") as f:
                     json.dump(context.cookies(), f)
                 logger.info("Cookies salvos")
             else:
-                print("needs_login else")
                 fechar_boasvindas(page)
                 fechar_tutorial(page)
 
-            # Navigate to Agenda so the SPA loads the auth token into localStorage.
-            page.get_by_role("button", name="Minha Área").click()
-            page.get_by_role("button", name="Agenda").click()
-            # Give the SPA time to complete its auth token initialization.
-            page.wait_for_timeout(3000)
-            token = extrair_token(page)
+            # ------------------------------------------------------------------
+            # Switch to Lista view and wait for the table
+            # ------------------------------------------------------------------
+            logger.info("Alternando para visão Lista...")
+            page.get_by_role("button", name="Lista").click()
+            page.wait_for_selector("table tbody tr", timeout=15000)
 
-            data_inicio, data_fim = janela_datas()
-            url_api = (
-                
-                f"https://api.bernoulli.com.br/api/comunicacao/agenda/listar"
-                f"?dataInicio={data_inicio}&dataTermino={data_fim}"
-            )
-            logger.info(f"Consultando API: {data_inicio} até {data_fim}")
+            # ------------------------------------------------------------------
+            # Scrape the table
+            # ------------------------------------------------------------------
+            linhas = page.locator("table tbody tr").all()
+            logger.info(f"{len(linhas)} linhas encontradas na tabela")
 
-            headers_js = dict(API_HEADERS)
-            if token:
-                headers_js["Authorization"] = f"Bearer {token}"
+            eventos_coletados = []
 
-            script = f"""
-                async () => {{
-                    const resp = await fetch("{url_api}", {{
-                        headers: {json.dumps(headers_js)}
-                    }});
-                    return await resp.json();
-                }}
-            """
+            for linha in linhas:
+                colunas = linha.locator("td").all()
+                if len(colunas) < 5:
+                    continue
 
-            resultado = page.evaluate(script)
-            eventos = resultado.get("data", [])
-            logger.info(f"{len(eventos)} eventos encontrados")
+                titulo = colunas[0].inner_text().strip()
+                # inner_html preserves links (Google Drive, YouTube, etc.)
+                descricao = colunas[1].inner_html().strip()
+                inicio_raw = colunas[2].inner_text().strip()
+                termino_raw = colunas[3].inner_text().strip()
+                tipo = colunas[4].locator("span").first.inner_text().strip()
 
-            eventos_formatados = []
-            for item in eventos:
-                eventos_formatados.append({
-                    "data": item.get("dataInicio", "").split("T")[0],
+                # Column 5 (Ações) — check for download icon
+                tem_anexo = False
+                if len(colunas) >= 6:
+                    tem_anexo = (
+                        colunas[5].locator("i.ph-file-arrow-down").count() > 0
+                        or colunas[5].locator("[class*='file-arrow-down']").count() > 0
+                        or colunas[5].locator("button[title*='baixar'], button[title*='download'], a[href]").count() > 0
+                    )
+
+                inicio = formatar_data_bernoulli(inicio_raw)
+                termino = formatar_data_bernoulli(termino_raw)
+
+                eventos_coletados.append({
+                    # New structured fields
+                    "inicio": inicio,
+                    "termino": termino,
+                    "tem_anexo": tem_anexo,
+                    # Core fields
+                    "titulo": titulo,
+                    "descricao": descricao,
+                    "tipo": tipo,
+                    # Legacy fields kept for hash compatibility and fallback display
+                    "data": inicio.date() if inicio else None,
                     "dia": "",
-                    "titulo": item.get("titulo", "Sem título"),
-                    "tipo": item.get("tipoAgenda", {}).get("descricao", ""),
-                    "datas": f"{item.get('dataInicio')} - {item.get('dataFim')}",
-                    "descricao": item.get("descricao", ""),
+                    "datas": f"{inicio_raw} — {termino_raw}",
                 })
 
-            return eventos_formatados
+            logger.info(f"{len(eventos_coletados)} eventos extraídos")
+            return eventos_coletados
 
         except PlaywrightTimeoutError as e:
             logger.error(f"Timeout: {e}")
